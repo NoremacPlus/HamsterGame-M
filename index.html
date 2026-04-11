@@ -2,364 +2,314 @@
 <html lang="zh-TW">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>替身戰鬥：標籤收納版</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>遊戲測試</title>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Nunito:wght@700;900&family=Noto+Sans+TC:wght@500;700;900&display=swap');
-        
+        /* ==========================================
+           CSS 樣式區塊
+           ========================================== */
         body {
-            font-family: 'Nunito', 'Noto Sans TC', sans-serif;
-            background-color: #fff0f5; 
-            background-image: radial-gradient(#ffd1dc 2px, transparent 2px);
-            background-size: 30px 30px; 
-            color: #5d4037; 
-            display: flex; justify-content: center; align-items: center;
-            height: 100dvh; margin: 0; padding: 10px; box-sizing: border-box; overflow: hidden; 
-        }
-        
-        .container {
-            background: #ffffff; padding: 15px; border-radius: 25px;
-            box-shadow: 0 8px 20px rgba(255, 182, 193, 0.6); width: 100%; max-width: 450px;
-            height: 100%; max-height: 850px; display: flex; flex-direction: column;
-            border: 4px solid #ffb6c1; box-sizing: border-box; position: relative;
+            margin: 0;
+            padding: 0;
+            font-family: Arial, sans-serif;
+            background-color: #1e1e1e;
+            color: #fff;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            height: 100vh;
+            overflow: hidden;
+            position: relative;
         }
 
-        h1 { color: #ff8c00; font-size: 1.3em; text-align: center; margin: 5px 0; text-shadow: 2px 2px 0px #ffe4b5; }
-        
-        .header-info {
-            display: flex; justify-content: space-between; align-items: center;
-            margin-bottom: 5px; background: #fff8dc; padding: 5px 15px; border-radius: 15px;
+        /* 1. 隱藏原標題 */
+        #game-title {
+            display: none;
         }
-        .level-info { font-size: 1.1em; font-weight: 900; color: #20b2aa; }
-        .timer { color: #ff6b81; font-size: 1em; font-weight: 900; }
-        
-        /* 戰鬥區 */
-        .battle-zone {
-            background-color: #fdf5e6; padding: 10px 15px; border-radius: 20px;
-            margin-bottom: 10px; text-align: center; border: 2px dashed #ffb6c1;
-            display: flex; flex-direction: column; align-items: center; justify-content: center;
+
+        /* 2. 跑馬燈移至最上方 */
+        #marquee-container {
+            position: absolute;
+            top: 0;
+            width: 100%;
+            background-color: #333;
+            color: #ffcc00;
+            padding: 10px 0;
+            text-align: center;
+            font-weight: bold;
+            z-index: 100;
+        }
+
+        /* 3. 關卡數縮小 */
+        #level-display {
+            margin-top: 60px; /* 避開跑馬燈 */
+            font-size: 0.8em;
+            color: #aaa;
+        }
+
+        /* 主要遊戲區域 */
+        #game-board {
+            width: 90%;
+            max-width: 400px;
+            margin-top: 20px;
+            text-align: center;
+        }
+
+        /* 怪物戰鬥區塊 (設定 relative 讓 Boss 按鈕可以絕對定位) */
+        #monster-area {
+            position: relative;
+            background-color: #2a2a2a;
+            border: 2px solid #555;
+            border-radius: 10px;
+            padding: 30px 20px;
+            margin-bottom: 20px;
             min-height: 150px;
         }
-        
-        /* 小字體怪物名稱 */
-        .enemy-name {
-            font-size: 0.9em; font-weight: 900; color: #a0522d; margin-bottom: 5px;
-            background: rgba(255,255,255,0.7); padding: 2px 10px; border-radius: 10px;
-        }
-        
-        .enemy-emoji-display { font-size: 2.5em; margin-bottom: 5px; transition: font-size 0.2s ease-in-out; }
-        .boss-active .enemy-emoji-display { font-size: 4em; margin-bottom: 10px; }
-        
-        .hp-bar-container {
-            width: 100%; background-color: #ffe4e1; height: 16px;
-            border-radius: 8px; overflow: hidden; border: 2px solid #ffc0cb;
-        }
-        .hp-bar { height: 100%; background-color: #ff6b81; width: 100%; transition: width 0.2s cubic-bezier(0.4, 0, 0.2, 1); }
-        #hpText { font-weight: bold; color: #d2691e; margin-top: 3px; font-size: 0.9em; }
-        
-        /* 標籤頁系統 (Tabs) */
-        .tab-container {
-            display: flex; flex-direction: column; flex-grow: 1; overflow: hidden; margin-bottom: 10px;
-        }
-        .tabs {
-            display: flex; gap: 5px;
-        }
-        .tab-btn {
-            flex: 1; padding: 8px; background: #ffe4e1; border: 2px solid #add8e6; border-bottom: none;
-            border-radius: 12px 12px 0 0; cursor: pointer; font-weight: 900; color: #a0522d;
-            font-size: 0.95em; transition: background 0.2s;
-        }
-        .tab-btn.active {
-            background: #f0f8ff; border-bottom: 2px solid #f0f8ff; z-index: 1; transform: translateY(2px);
-            color: #20b2aa;
-        }
-        
-        .tab-content {
-            display: none; background: #f0f8ff; border: 2px solid #add8e6; border-radius: 0 0 12px 12px;
-            padding: 10px; flex-grow: 1; overflow-y: auto;
-        }
-        .tab-content.active { display: block; }
-        .tab-content::-webkit-scrollbar { width: 6px; }
-        .tab-content::-webkit-scrollbar-thumb { background: #87ceeb; border-radius: 3px; }
 
-        /* 升級項目 */
-        .upgrade-item {
-            display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; 
-            font-size: 0.85em; background: #ffffff; padding: 6px 8px; border-radius: 8px; font-weight: bold;
-        }
-        .upgrade-btn {
-            background-color: #87ceeb; padding: 5px 8px; font-size: 0.9em; flex-shrink: 0; 
-            color: #fff; border:none; border-radius:6px; font-weight: bold; box-shadow: 0 2px 0 #5f9ea0;
-        }
-        .upgrade-btn:active { transform: translateY(2px); box-shadow: none; }
-        .upgrade-btn:disabled { background-color: #d3d3d3; color: #888; box-shadow: none; cursor: not-allowed; }
-
-        /* 盲盒區專屬設計 */
-        .box-ui { text-align: center; padding: 10px 0; }
-        .box-count-text { font-size: 1.2em; font-weight: 900; color: #9370db; margin-bottom: 15px; }
-        .btn-open-box {
-            background: linear-gradient(45deg, #ff9a9e 0%, #fecfef 100%);
-            color: #5d4037; padding: 12px 25px; border-radius: 20px; border: none; font-weight: 900; font-size: 1.1em;
-            cursor: pointer; animation: pulse 1.5s infinite; box-shadow: 0 4px 10px rgba(0,0,0,0.15);
-        }
-        .rates-info { font-size: 0.75em; color: #888; margin-top: 15px; line-height: 1.5; }
-        @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.05); } 100% { transform: scale(1); } }
-
-        /* 底部行動區 & 小型資源顯示 */
-        .action-zone { position: relative; margin-top: 5px; }
-        .small-resource {
-            text-align: right; font-size: 0.95em; font-weight: 900; color: #d2691e;
-            margin-bottom: 5px; padding-right: 5px;
-        }
-        .actions { display: flex; gap: 8px; flex-direction: column; }
-        button { touch-action: manipulation; transition: transform 0.1s; }
-        .btn-attack { 
-            padding: 12px; font-size: 1.1em; font-weight: 900; border: none; border-radius: 12px; 
-            background-color: #ffd700; color: #a0522d; box-shadow: 0 4px 0 #daa520; 
-        }
-        .btn-attack:active { transform: translateY(4px); box-shadow: none; }
-        .btn-skill { 
-            padding: 12px; font-size: 1em; font-weight: 900; border: none; border-radius: 12px; 
-            background-color: #dda0dd; color: #ffffff; box-shadow: 0 4px 0 #ba55d3; 
-        }
-        .btn-skill:active { transform: translateY(4px); box-shadow: none; }
-        .btn-skill:disabled { background-color: #e6e6e6 !important; color: #a9a9a9; box-shadow: none; }
-        
-        .log {
-            margin-top: 10px; height: 50px; background: #ffffff; padding: 8px; border-radius: 12px;
-            font-size: 0.8em; color: #5d4037; overflow-y: hidden; text-align: left; 
-            border: 2px solid #e6e6fa; font-weight: bold; line-height: 1.4;
+        /* 4. 打輸 Boss 後的挑戰按鈕 */
+        #btn-challenge-boss {
+            display: none; /* 預設隱藏 */
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background-color: #ff4c4c;
+            color: white;
+            border: none;
+            padding: 8px 12px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+            z-index: 10;
         }
         
-        .shake { animation: shake 0.3s cubic-bezier(.36,.07,.19,.97) both; }
-        @keyframes shake { 10%, 90% { transform: translate3d(-2px, 0, 0); } 20%, 80% { transform: translate3d(3px, 0, 0); } 30%, 50%, 70% { transform: translate3d(-5px, 0, 0); } 40%, 60% { transform: translate3d(5px, 0, 0); } }
-        .crit-text { color: #ff1493; font-weight: 900; }
-        .ssr-text { color: #ff4500; font-weight: 900; text-shadow: 0 0 5px #ffd700; }
+        #btn-challenge-boss:hover {
+            background-color: #ff1c1c;
+        }
+
+        /* 遊戲資訊與按鈕 */
+        .stats { margin: 10px 0; font-size: 1.1em; }
+        .action-btn {
+            background-color: #4CAF50; color: white; border: none;
+            padding: 10px 20px; margin: 5px; border-radius: 5px; cursor: pointer;
+        }
+        
+        /* 5. 最新訊息移至最下面 */
+        #latest-message-container {
+            position: absolute;
+            bottom: 0;
+            width: 100%;
+            background-color: #222;
+            padding: 15px 0;
+            text-align: center;
+            border-top: 1px solid #444;
+            color: #00ffcc;
+        }
     </style>
 </head>
 <body>
 
-<div class="container" id="gameContainer">
-    <h1>✨ 替身戰鬥：標籤收納版 ✨</h1>
-    
-    <div class="header-info">
-        <div class="level-info" id="levelDisplay">關卡：1</div>
-        <div class="timer" id="timerDisplay"></div>
+    <div id="marquee-container">
+        <marquee scrollamount="5">伺服器公告：歡迎來到新版本！盲盒獎項已更新，祝您好運！</marquee>
     </div>
 
-    <div class="battle-zone" id="battleZone">
-        <div class="enemy-name" id="enemyNameDisplay">貪吃小豬</div>
-        <div class="enemy-emoji-display" id="enemyEmoji">🐷</div>
-        <div class="hp-bar-container"><div class="hp-bar" id="enemyHpBar"></div></div>
-        <div id="hpText">HP: 100 / 100</div>
-    </div>
+    <h1 id="game-title">這是原本的標題</h1>
 
-    <div class="tab-container">
-        <div class="tabs">
-            <button class="tab-btn active" id="btnTabUpgrade" onclick="switchTab('upgrade')">🏪 商店升級</button>
-            <button class="tab-btn" id="btnTabBox" onclick="switchTab('box')">🎁 幸運盲盒</button>
-        </div>
+    <div id="level-display">第 1 關 (進度: 0/5)</div>
+
+    <div id="game-board">
         
-        <div id="tab-upgrade" class="tab-content active">
-            <div class="upgrade-item"><span id="txt-atk">💪 攻擊：10</span><button class="upgrade-btn" id="btn-atk" onclick="upgrade('atk')">升(20籽)</button></div>
-            <div class="upgrade-item"><span id="txt-critRate">🎯 爆率：5%</span><button class="upgrade-btn" id="btn-critRate" onclick="upgrade('critRate')">升(50籽)</button></div>
-            <div class="upgrade-item"><span id="txt-critDmg">💥 爆傷：150%</span><button class="upgrade-btn" id="btn-critDmg" onclick="upgrade('critDmg')">升(100籽)</button></div>
-            <div class="upgrade-item"><span id="txt-seedBonus">🌻 掉落：x1.0</span><button class="upgrade-btn" id="btn-seedBonus" onclick="upgrade('seedBonus')">升(150籽)</button></div>
-            <div class="upgrade-item"><span id="txt-standMult">👻 替身：x15</span><button class="upgrade-btn" id="btn-standMult" onclick="upgrade('standMult')">升(300籽)</button></div>
-            <div class="upgrade-item"><span id="txt-cd">⏱️ 冷卻：10.0s</span><button class="upgrade-btn" id="btn-cd" onclick="upgrade('cd')">升(500籽)</button></div>
-            <div class="upgrade-item"><span id="txt-bossTime">⏳ Boss：30s</span><button class="upgrade-btn" id="btn-bossTime" onclick="upgrade('bossTime')">升(800籽)</button></div>
+        <div class="stats" id="player-hp-display">玩家 HP: 1000 / 1000</div>
+
+        <div id="monster-area">
+            <button id="btn-challenge-boss">挑戰 BOSS</button>
+            <h2 id="monster-name">史萊姆 (小怪)</h2>
+            <div class="stats" id="monster-hp-display">HP: 100 / 100</div>
+            <div class="stats" id="monster-atk-display" style="font-size: 0.9em; color:#ff9999;">攻擊力: 10</div>
         </div>
 
-        <div id="tab-box" class="tab-content">
-            <div class="box-ui">
-                <div class="box-count-text">擁有盲盒：<span id="boxCount">0</span> 個</div>
-                <button class="btn-open-box" onclick="openBox()">🎲 立即開箱！</button>
-                <div class="rates-info">
-                    🏆 機率表 🏆<br>
-                    1% SSR (攻擊力翻倍) | 9% SR (海量種子)<br>
-                    30% R (替身強化) | 30% N (小獎) | 30% 銘謝惠顧
-                </div>
-            </div>
-        </div>
+        <button class="action-btn" onclick="attackMonster()">⚔️ 攻擊怪物</button>
+        <button class="action-btn" onclick="openBlindBoxUI()" style="background-color: #9c27b0;">🎁 開啟盲盒</button>
+
     </div>
 
-    <div class="action-zone">
-        <div class="small-resource">持有：🌻 <span id="seedCount">0</span> 籽</div>
-        <div class="actions">
-            <button class="btn-attack" onclick="basicAttack()">🐾 倉鼠突擊！</button>
-            <button class="btn-skill" id="btnSkill" onclick="standAttack()">🌻 召喚 Seed Harvester！</button>
-        </div>
+    <div id="latest-message-container">
+        準備開始戰鬥！
     </div>
 
-    <div class="log" id="battleLog">戰鬥開始！努力收集葵花籽吧！🐹<br></div>
-</div>
+    <script>
+        // --- 玩家與遊戲狀態 ---
+        let currentLevel = 1;
+        let monsterKills = 0; // 當前關卡擊殺數
+        const killsToBoss = 5; // 殺 5 隻小怪出 Boss
 
-<script>
-    let level = 1; let seeds = 0; let blindBoxes = 0;
-    let stats = { atk: 10, critRate: 0.05, critDmg: 1.5, seedBonus: 1.0, standMult: 15, cd: 10.0, bossTime: 30 };
-    let costs = { atk: 20, critRate: 50, critDmg: 100, seedBonus: 150, standMult: 300, cd: 500, bossTime: 800 };
-    let enemyMaxHp = 100; let enemyHp = 100; let isBoss = false;
-    let bossTimer; let timeLeft = 30; let skillReady = true;
+        let playerMaxHp = 1000;
+        let playerHp = playerMaxHp;
+        let playerAtk = 50; // 測試用玩家攻擊力
 
-    // 帶有名稱的 30 種敵人圖鑑
-    const enemyData = [
-        {e:"🐷", n:"貪吃小豬"}, {e:"🐸", n:"呱呱青蛙"}, {e:"🐶", n:"單身汪汪"}, {e:"🐱", n:"傲嬌貓咪"}, {e:"🐭", n:"下水道鼠"},
-        {e:"🐹", n:"野生同伴"}, {e:"🐰", n:"暴力兔兔"}, {e:"🦊", n:"狡猾狐狸"}, {e:"🐻", n:"暴走熊熊"}, {e:"🐼", n:"功夫熊貓"},
-        {e:"🐛", n:"胖毛毛蟲"}, {e:"🦋", n:"劇毒蝴蝶"}, {e:"🐌", n:"飆速蝸牛"}, {e:"🐞", n:"鐵甲瓢蟲"}, {e:"🐜", n:"搬磚螞蟻"},
-        {e:"🕷️", n:"八爪蜘蛛"}, {e:"🐝", n:"殺人蜜蜂"}, {e:"🦂", n:"沙漠毒蠍"}, {e:"🦗", n:"吵鬧蟋蟀"}, {e:"🦟", n:"吸血蚊子"},
-        {e:"👻", n:"調皮幽靈"}, {e:"👾", n:"外星像素"}, {e:"👽", n:"小灰人"}, {e:"🤖", n:"失控機器"}, {e:"💩", n:"發臭便便"},
-        {e:"🤡", n:"恐怖小丑"}, {e:"👹", n:"赤面惡鬼"}, {e:"💀", n:"骷髏小兵"}, {e:"🧟", n:"無腦喪屍"}, {e:"🧙", n:"見習法師"}
-    ];
-    const bossEmoji = "👾";
+        let isBossLevel = false;
+        let bossChallengePending = false; // 是否在等待挑戰 Boss 的狀態
 
-    const battleZone = document.getElementById('battleZone');
-    const enemyEmojiDisplay = document.getElementById('enemyEmoji');
-    const enemyNameDisplay = document.getElementById('enemyNameDisplay');
-    const hpBar = document.getElementById('enemyHpBar');
-    const hpText = document.getElementById('hpText');
-    const seedDisplay = document.getElementById('seedCount');
-    const boxDisplay = document.getElementById('boxCount');
-    const timerDisplay = document.getElementById('timerDisplay');
-    const btnSkill = document.getElementById('btnSkill');
-    const battleLog = document.getElementById('battleLog');
+        // --- 當前怪物狀態 ---
+        let currentMonster = {
+            name: "史萊姆",
+            maxHp: 100,
+            hp: 100,
+            atk: 10
+        };
 
-    // 標籤切換邏輯
-    window.switchTab = function(tabName) {
-        document.getElementById('tab-upgrade').classList.remove('active');
-        document.getElementById('tab-box').classList.remove('active');
-        document.getElementById('btnTabUpgrade').classList.remove('active');
-        document.getElementById('btnTabBox').classList.remove('active');
-        
-        document.getElementById(`tab-${tabName}`).classList.add('active');
-        document.getElementById(tabName === 'upgrade' ? 'btnTabUpgrade' : 'btnTabBox').classList.add('active');
-    };
+        // --- 盲盒獎池 (15種) ---
+        const blindBoxPrizes = [
+            "SUI 幣 x 10", "BTC 碎片", "ETH 碎片", "DOGE 幣 x 100", "PEPE 幣 x 1000",
+            "小型恢復藥劑", "中型恢復藥劑", "基礎攻擊強化", "進階攻擊強化", 
+            "爆擊率提升 5%", "爆擊傷害提升 10%", "閃避率提升 5%", 
+            "金幣 x 500", "金幣 x 2000", "稀有裝備寶箱"
+        ];
 
-    function logMessage(msg) { battleLog.innerHTML = msg + "<br>" + battleLog.innerHTML; }
-    function triggerShake() {
-        const gameContainer = document.getElementById('gameContainer');
-        gameContainer.classList.remove('shake');
-        void gameContainer.offsetWidth; gameContainer.classList.add('shake');
-    }
+        // UI 元素綁定
+        const levelDisplay = document.getElementById('level-display');
+        const playerHpDisplay = document.getElementById('player-hp-display');
+        const monsterName = document.getElementById('monster-name');
+        const monsterHpDisplay = document.getElementById('monster-hp-display');
+        const monsterAtkDisplay = document.getElementById('monster-atk-display');
+        const msgContainer = document.getElementById('latest-message-container');
+        const btnChallengeBoss = document.getElementById('btn-challenge-boss');
 
-    window.openBox = function() {
-        if (blindBoxes <= 0) { logMessage("<span style='color:#a9a9a9'>沒有盲盒了！快去打怪收集！</span>"); return; }
-        blindBoxes--;
-        let roll = Math.random();
-        if (roll < 0.01) { stats.atk *= 2; logMessage(`<span class='ssr-text'>🎰 SSR大獎！基礎攻擊力永久翻倍！</span>`); } 
-        else if (roll < 0.10) { let s = Math.floor(seeds*1.5)+5000; seeds+=s; logMessage(`<span style='color:#20b2aa;'>🎰 SR賞！天降橫財，獲得 ${s} 籽！</span>`); } 
-        else if (roll < 0.40) { stats.standMult += 5; logMessage(`<span style='color:#32cd32'>🎰 R賞！替身覺醒，傷害倍率增加！</span>`); } 
-        else if (roll < 0.70) { let s = 500*level; seeds+=s; logMessage(`獲得安慰獎 ${s} 籽 🌻`); } 
-        else { logMessage("<span style='color:#ff6347'>打開盲盒...裡面只有一團棉花。(血虧) 😿</span>"); }
-        updateUI();
-    }
-
-    function spawnEnemy() {
-        clearInterval(bossTimer); timerDisplay.innerText = "";
-        isBoss = (level % 20 === 0);
-        let baseHp = Math.floor(100 * Math.pow(1.18, level - 1)); 
-        
-        if (isBoss) {
-            enemyMaxHp = baseHp * 15; 
-            battleZone.classList.add('boss-active'); 
-            enemyEmojiDisplay.innerText = bossEmoji; 
-            enemyNameDisplay.innerText = `⚠️ 吉良吉影的貓草 (Lv.${level}) ⚠️`;
-            enemyNameDisplay.style.color = "#da70d6";
-            
-            timeLeft = stats.bossTime; timerDisplay.innerText = `⏳ 剩餘：${timeLeft}s`;
-            bossTimer = setInterval(() => {
-                timeLeft--; timerDisplay.innerText = `⏳ 剩餘：${timeLeft}s`;
-                if (timeLeft <= 0) { clearInterval(bossTimer); logMessage(`<span style='color:red'>時間到！Boss逃跑，退回前一關。</span>`); level--; spawnEnemy(); }
-            }, 1000);
-        } else {
-            enemyMaxHp = baseHp; battleZone.classList.remove('boss-active'); 
-            enemyNameDisplay.style.color = "#a0522d";
-            let randomEnemy = enemyData[Math.floor(Math.random() * enemyData.length)];
-            enemyEmojiDisplay.innerText = randomEnemy.e;
-            enemyNameDisplay.innerText = randomEnemy.n;
+        // 顯示最新訊息
+        function showMessage(msg) {
+            msgContainer.innerText = msg;
         }
-        enemyHp = enemyMaxHp; updateUI();
-    }
 
-    function enemyDied() {
-        let diedName = enemyNameDisplay.innerText;
-        let baseReward = isBoss ? level * 100 : level * 10;
-        let finalReward = Math.floor(baseReward * stats.seedBonus); seeds += finalReward;
-        
-        let dropMsg = `打敗了 [${diedName}]！獲得 ${finalReward} 籽！`;
-        if (isBoss) { let b = Math.floor(Math.random()*3)+1; blindBoxes+=b; dropMsg += ` <span style='color:#da70d6;'>🎁 掉落 ${b} 個盲盒！</span>`; } 
-        else if (Math.random() < 0.15) { blindBoxes++; dropMsg += ` <span style='color:#da70d6;'>🎁 掉落 1 個盲盒！</span>`; }
+        // 更新畫面數值
+        function updateUI() {
+            playerHpDisplay.innerText = `玩家 HP: ${playerHp} / ${playerMaxHp}`;
+            monsterName.innerText = isBossLevel ? `🔥 關卡 BOSS 🔥` : `小怪 (第 ${currentLevel} 關)`;
+            monsterHpDisplay.innerText = `HP: ${currentMonster.hp} / ${currentMonster.maxHp}`;
+            monsterAtkDisplay.innerText = `攻擊力: ${currentMonster.atk}`;
+            
+            if (bossChallengePending) {
+                levelDisplay.innerText = `第 ${currentLevel} 關 (可隨時挑戰 BOSS)`;
+            } else {
+                levelDisplay.innerText = `第 ${currentLevel} 關 (進度: ${monsterKills}/${killsToBoss})`;
+            }
+        }
 
-        logMessage(dropMsg); level++; spawnEnemy();
-    }
+        // --- 核心邏輯：計算怪物數值 ---
+        function calculateMonsterStats(level, isBoss) {
+            const baseHp = isBoss ? 500 : 100;
+            const baseAtk = isBoss ? 50 : 10;
+            
+            // 血量：平滑成長
+            let maxHp = baseHp * (1 + level * 0.15) * Math.pow(1.02, level); 
+            // 攻擊力：自然常數 e
+            const k = 0.05; 
+            let attack = baseAtk * Math.exp(k * level); 
 
-    function updateUI() {
-        hpBar.style.width = Math.max(0, (enemyHp / enemyMaxHp * 100)) + '%';
-        hpText.innerText = `HP: ${Math.ceil(enemyHp)} / ${enemyMaxHp}`;
-        document.getElementById('levelDisplay').innerText = `關卡：${level}`;
-        seedDisplay.innerText = Math.floor(seeds); boxDisplay.innerText = blindBoxes;
+            return { 
+                maxHp: Math.floor(maxHp), 
+                atk: Math.floor(attack) 
+            };
+        }
 
-        document.getElementById('txt-atk').innerText = `💪 攻擊：${stats.atk}`;
-        document.getElementById('txt-critRate').innerText = `🎯 爆率：${(stats.critRate * 100).toFixed(1)}%`;
-        document.getElementById('txt-critDmg').innerText = `💥 爆傷：${(stats.critDmg * 100).toFixed(0)}%`;
-        document.getElementById('txt-seedBonus').innerText = `🌻 掉落：x${stats.seedBonus.toFixed(1)}`;
-        document.getElementById('txt-standMult').innerText = `👻 替身：x${stats.standMult}`;
-        document.getElementById('txt-cd').innerText = `⏱️ 冷卻：${stats.cd.toFixed(1)}s`;
-        document.getElementById('txt-bossTime').innerText = `⏳ Boss：${stats.bossTime}s`;
+        // --- 生成怪物邏輯 ---
+        function spawnNormalMonster() {
+            isBossLevel = false;
+            let stats = calculateMonsterStats(currentLevel, false);
+            currentMonster = { name: "小怪", maxHp: stats.maxHp, hp: stats.maxHp, atk: stats.atk };
+            updateUI();
+            showMessage(bossChallengePending ? "你正在農小怪，準備好隨時挑戰右上角BOSS！" : "新的小怪出現了！");
+        }
 
-        const uiMap = ['atk', 'critRate', 'critDmg', 'seedBonus', 'standMult', 'cd', 'bossTime'];
-        uiMap.forEach(type => {
-            let btn = document.getElementById(`btn-${type}`);
-            if (type === 'critRate' && stats.critRate >= 1.0) { btn.innerText = "滿級"; btn.disabled = true; return; }
-            if (type === 'cd' && stats.cd <= 2.0) { btn.innerText = "極限"; btn.disabled = true; return; }
-            btn.innerText = `升(${costs[type]})`; btn.disabled = seeds < costs[type];
-        });
-    }
+        function spawnBossMonster() {
+            isBossLevel = true;
+            let stats = calculateMonsterStats(currentLevel, true);
+            currentMonster = { name: "BOSS", maxHp: stats.maxHp, hp: stats.maxHp, atk: stats.atk };
+            updateUI();
+            showMessage(`第 ${currentLevel} 關 BOSS 降臨！`);
+        }
 
-    window.upgrade = function(type) {
-        if (seeds >= costs[type]) {
-            seeds -= costs[type];
-            if (type==='atk') { stats.atk += 20; costs.atk = Math.floor(costs.atk * 1.6); }
-            if (type==='critRate') { stats.critRate += 0.05; costs.critRate = Math.floor(costs.critRate * 2.0); } 
-            if (type==='critDmg') { stats.critDmg += 0.5; costs.critDmg = Math.floor(costs.critDmg * 1.8); } 
-            if (type==='seedBonus') { stats.seedBonus += 0.5; costs.seedBonus = Math.floor(costs.seedBonus * 2.0); }
-            if (type==='standMult') { stats.standMult += 5; costs.standMult = Math.floor(costs.standMult * 1.8); }
-            if (type==='cd') { stats.cd -= 0.5; costs.cd = Math.floor(costs.cd * 2.2); }
-            if (type==='bossTime') { stats.bossTime += 2; costs.bossTime = Math.floor(costs.bossTime * 1.5); }
+        // --- 戰鬥互動 ---
+        function attackMonster() {
+            if (playerHp <= 0) return;
+
+            // 玩家攻擊怪物
+            currentMonster.hp -= playerAtk;
+            if (currentMonster.hp <= 0) {
+                currentMonster.hp = 0;
+                onMonsterDefeated();
+                return;
+            }
+
+            // 怪物反擊玩家
+            playerHp -= currentMonster.atk;
+            if (playerHp <= 0) {
+                playerHp = 0;
+                onPlayerDefeated();
+            }
             updateUI();
         }
-    }
 
-    function calculateDamage(multiplier = 1) {
-        let isCrit = Math.random() < stats.critRate;
-        let dmg = stats.atk * multiplier * (0.9 + Math.random() * 0.2); 
-        if (isCrit) dmg *= stats.critDmg;
-        return { dmg: Math.floor(dmg), isCrit: isCrit };
-    }
+        // 怪物被擊敗
+        function onMonsterDefeated() {
+            if (isBossLevel) {
+                // 打贏 Boss，進入下一關
+                showMessage("擊敗 BOSS！進入下一關！");
+                currentLevel++;
+                monsterKills = 0;
+                bossChallengePending = false;
+                btnChallengeBoss.style.display = 'none';
+                playerHp = playerMaxHp; // 升級回血(測試用)
+                spawnNormalMonster();
+            } else {
+                // 打贏小怪
+                if (bossChallengePending) {
+                    // 如果正在卡關農小怪狀態，繼續生小怪 (不推進Boss進度)
+                    spawnNormalMonster();
+                } else {
+                    // 正常推進進度
+                    monsterKills++;
+                    if (monsterKills >= killsToBoss) {
+                        spawnBossMonster();
+                    } else {
+                        spawnNormalMonster();
+                    }
+                }
+            }
+        }
 
-    window.basicAttack = function() {
-        if (enemyHp <= 0) return;
-        let hit = calculateDamage(1); enemyHp -= hit.dmg;
-        seeds += Math.floor((Math.floor(level / 2) + 1) * stats.seedBonus); 
-        
-        let msg = `造成 ${hit.dmg} 傷害！`; if (hit.isCrit) msg = `<span class='crit-text'>爆擊！${msg}</span>`;
-        logMessage(msg); triggerShake();
-        if (enemyHp <= 0) enemyDied(); else updateUI();
-    }
+        // 玩家被擊敗
+        function onPlayerDefeated() {
+            if (isBossLevel) {
+                // 輸給 Boss
+                showMessage("你被 BOSS 擊敗了！退回小怪區提升實力吧！");
+                bossChallengePending = true;
+                btnChallengeBoss.style.display = 'block'; // 顯示右上角挑戰按鈕
+                playerHp = playerMaxHp; // 復活(測試用)
+                spawnNormalMonster(); // 回退打小怪
+            } else {
+                // 輸給小怪 (這邊先簡單處理讓他復活繼續打)
+                showMessage("你被小怪擊敗了！重新振作！");
+                playerHp = playerMaxHp;
+                spawnNormalMonster();
+            }
+        }
 
-    window.standAttack = function() {
-        if (enemyHp <= 0 || !skillReady) return;
-        let hit = calculateDamage(stats.standMult); enemyHp -= hit.dmg;
-        logMessage(`<span style='color:#ba55d3;'>Seed Harvester 歐拉連打！造成 ${hit.dmg} 傷害！👻</span>`);
-        triggerShake(); skillReady = false; let currentCd = stats.cd; btnSkill.disabled = true;
-        
-        let cdInterval = setInterval(() => {
-            currentCd -= 0.1; btnSkill.innerText = `冷卻中 (${currentCd.toFixed(1)}s)`;
-            if (currentCd <= 0) { clearInterval(cdInterval); skillReady = true; btnSkill.disabled = false; btnSkill.innerText = "🌻 召喚 Seed Harvester！"; }
-        }, 100);
-        if (enemyHp <= 0) enemyDied(); else updateUI();
-    }
+        // --- 點擊挑戰 BOSS 按鈕 ---
+        btnChallengeBoss.addEventListener('click', () => {
+            bossChallengePending = false;
+            btnChallengeBoss.style.display = 'none';
+            playerHp = playerMaxHp; // 確保打王前滿血
+            spawnBossMonster();
+        });
 
-    spawnEnemy();
-</script>
+        // --- 開啟盲盒 ---
+        function openBlindBoxUI() {
+            const prize = blindBoxPrizes[Math.floor(Math.random() * blindBoxPrizes.length)];
+            showMessage(`🎁 開啟盲盒獲得：【 ${prize} 】！`);
+        }
+
+        // 初始化遊戲
+        spawnNormalMonster();
+
+    </script>
 </body>
 </html>

@@ -2,264 +2,441 @@
 <html lang="zh-TW">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>替身戰鬥：Seed Harvester</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>替身戰鬥：Emoji 可愛極限版</title>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@700;900&display=swap');
+        /* 加入更可愛的字體 */
+        @import url('https://fonts.googleapis.com/css2?family=Nunito:wght@700;900&family=Noto+Sans+TC:wght@500;700;900&display=swap');
+        
         body {
-            font-family: 'Noto Sans TC', sans-serif;
-            background-color: #1a0033;
-            color: #fff;
+            font-family: 'Nunito', 'Noto Sans TC', sans-serif;
+            background-color: #fff0f5; /* 淺粉紅背景 */
+            background-image: radial-gradient(#ffd1dc 2px, transparent 2px);
+            background-size: 30px 30px; /* 可愛點點背景 */
+            color: #5d4037; /* 深咖啡色字體 */
             display: flex;
             justify-content: center;
             align-items: center;
-            height: 100vh;
+            /* 使用 100dvh 解決手機網址列遮擋問題 */
+            height: 100dvh; 
             margin: 0;
-            overflow: hidden;
+            padding: 10px;
+            box-sizing: border-box;
+            overflow: hidden; /* 防止整個畫面被拖拉滾動 */
         }
+        
         .container {
-            background: linear-gradient(135deg, #2b0055 0%, #110022 100%);
-            padding: 30px;
-            border-radius: 15px;
-            box-shadow: 0 0 20px rgba(138, 43, 226, 0.5);
-            width: 90%;
-            max-width: 500px;
-            text-align: center;
-            border: 2px solid #8a2be2;
-        }
-        h1 {
-            color: #ffd700;
-            text-shadow: 2px 2px 4px #000;
-            margin-bottom: 5px;
-        }
-        h3 {
-            color: #d8bfd8;
-            margin-top: 0;
-            margin-bottom: 20px;
-        }
-        .battle-zone {
-            background-color: rgba(0, 0, 0, 0.6);
-            padding: 20px;
-            border-radius: 10px;
-            margin-bottom: 20px;
-        }
-        .enemy-name {
-            font-size: 1.5em;
-            color: #ff4500;
-        }
-        .hp-bar-container {
+            background: #ffffff;
+            padding: 15px;
+            border-radius: 25px;
+            box-shadow: 0 8px 20px rgba(255, 182, 193, 0.6);
             width: 100%;
-            background-color: #333;
-            height: 25px;
-            border-radius: 12px;
-            margin: 10px 0;
-            overflow: hidden;
-            border: 2px solid #555;
+            max-width: 450px;
+            height: 100%; 
+            max-height: 850px; 
+            display: flex;
+            flex-direction: column;
+            border: 4px solid #ffb6c1; /* 粉紅邊框 */
+            box-sizing: border-box;
         }
-        .hp-bar {
-            height: 100%;
-            background-color: #ff3333;
-            width: 100%;
-            transition: width 0.2s;
-        }
-        .stats {
+
+        h1 { color: #ff8c00; font-size: 1.4em; text-align: center; margin: 5px 0; text-shadow: 2px 2px 0px #ffe4b5; }
+        h3 { color: #a0522d; font-size: 0.9em; text-align: center; margin-bottom: 10px; }
+        
+        .header-info {
             display: flex;
             justify-content: space-between;
-            font-size: 1.2em;
-            margin-bottom: 20px;
-            color: #00ffcc;
+            align-items: center;
+            margin-bottom: 5px;
+            background: #fff8dc;
+            padding: 5px 15px;
+            border-radius: 15px;
         }
-        .actions {
-            display: flex;
-            gap: 10px;
-            flex-direction: column;
-        }
-        button {
+        .level-info { font-size: 1.1em; font-weight: 900; color: #20b2aa; }
+        .timer { color: #ff6b81; font-size: 1.1em; font-weight: 900; }
+        
+        .battle-zone {
+            background-color: #fdf5e6;
             padding: 15px;
-            font-size: 1.2em;
-            font-weight: bold;
-            border: none;
-            border-radius: 8px;
-            cursor: pointer;
-            transition: all 0.1s;
-            text-transform: uppercase;
+            border-radius: 20px;
+            margin-bottom: 10px;
+            text-align: center;
+            border: 2px dashed #ffb6c1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
         }
-        button:active {
-            transform: scale(0.95);
+        
+        /* 敵人 emoji 的樣式 */
+        .enemy-emoji-display {
+            font-size: 2.5em; /* 預設小怪 emoji 大小 */
+            margin-bottom: 10px;
+            transition: font-size 0.2s ease-in-out;
         }
-        .btn-attack {
-            background-color: #f39c12;
-            color: white;
-            box-shadow: 0 4px 0 #d68910;
+        
+        /* 當是 Boss 時，emoji 變大 */
+        .boss-active .enemy-emoji-display {
+            font-size: 4em; /* Boss emoji 變為 2.5倍大 */
+            margin-top: 10px;
+            margin-bottom: 15px;
         }
-        .btn-skill {
-            background-color: #8e44ad;
-            color: white;
-            box-shadow: 0 4px 0 #732d91;
+        
+        .hp-bar-container {
+            width: 100%; background-color: #ffe4e1; height: 18px;
+            border-radius: 10px; overflow: hidden; border: 2px solid #ffc0cb;
         }
-        .btn-skill:disabled {
-            background-color: #555;
-            box-shadow: 0 4px 0 #333;
-            color: #888;
-            cursor: not-allowed;
+        .hp-bar { height: 100%; background-color: #ff6b81; width: 100%; transition: width 0.2s cubic-bezier(0.4, 0, 0.2, 1); }
+        #hpText { font-weight: bold; color: #d2691e; margin-top: 5px;}
+        
+        /* 資源與抽獎區 */
+        .resource-zone {
+            display: flex; justify-content: space-between; align-items: center;
+            background-color: #fffacd; padding: 10px 15px; border-radius: 15px;
+            margin-bottom: 10px; border: 2px solid #ffd700;
         }
+        .seed-display { font-size: 1.1em; color: #d2691e; font-weight: 900; }
+        .box-display { font-size: 1.1em; color: #9370db; font-weight: 900; display: flex; align-items: center; gap: 5px;}
+        .btn-open-box {
+            background: linear-gradient(45deg, #ff9a9e 0%, #fecfef 99%, #fecfef 100%);
+            color: #5d4037; padding: 5px 12px; border-radius: 15px; border: none; font-weight: 900;
+            cursor: pointer; animation: pulse 1.5s infinite; box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.08); } 100% { transform: scale(1); } }
+
+        /* 商店區 */
+        .shop-zone {
+            background-color: #f0f8ff; padding: 10px; border-radius: 15px;
+            margin-bottom: 10px; text-align: left; 
+            flex-grow: 1; /* 自動填滿剩餘空間 */
+            overflow-y: auto; /* 內容過多時可滑動 */
+            border: 2px solid #add8e6;
+        }
+        .shop-zone::-webkit-scrollbar { width: 8px; }
+        .shop-zone::-webkit-scrollbar-thumb { background: #87ceeb; border-radius: 4px; }
+
+        .upgrade-item {
+            display: flex; justify-content: space-between; align-items: center;
+            margin-bottom: 8px; font-size: 0.9em; background: #ffffff; padding: 8px; 
+            border-radius: 10px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); font-weight: bold;
+        }
+        .upgrade-btn {
+            background-color: #87ceeb; padding: 6px 10px; font-size: 0.9em; flex-shrink: 0; 
+            color: #fff; border:none; border-radius:8px; font-weight: bold; box-shadow: 0 3px 0 #5f9ea0;
+        }
+        .upgrade-btn:active { transform: translateY(3px); box-shadow: none; }
+        .upgrade-btn:disabled { background-color: #d3d3d3; color: #888; box-shadow: 0 3px 0 #a9a9a9; }
+
+        /* 行動按鈕 */
+        .actions { display: flex; gap: 10px; flex-direction: column; }
+        button { touch-action: manipulation; transition: transform 0.1s; }
+        .btn-attack { 
+            padding: 15px; font-size: 1.2em; font-weight: 900; border: none; border-radius: 15px; 
+            background-color: #ffd700; color: #a0522d; box-shadow: 0 5px 0 #daa520; 
+        }
+        .btn-attack:active { transform: translateY(5px); box-shadow: none; }
+        
+        .btn-skill { 
+            padding: 15px; font-size: 1.1em; font-weight: 900; border: none; border-radius: 15px; 
+            background-color: #dda0dd; color: #ffffff; box-shadow: 0 5px 0 #ba55d3; 
+        }
+        .btn-skill:active { transform: translateY(5px); box-shadow: none; }
+        .btn-skill:disabled { background-color: #e6e6e6 !important; color: #a9a9a9; box-shadow: 0 5px 0 #cccccc; cursor: not-allowed; }
+        
+        /* 戰鬥文字紀錄 */
         .log {
-            margin-top: 20px;
-            height: 80px;
-            background: #000;
-            padding: 10px;
-            border-radius: 5px;
-            font-size: 0.9em;
-            color: #00ff00;
-            overflow-y: hidden;
-            text-align: left;
-            border: 1px solid #333;
+            margin-top: 10px; height: 60px; background: #ffffff; padding: 10px; border-radius: 15px;
+            font-size: 0.85em; color: #5d4037; overflow-y: hidden; text-align: left; 
+            border: 2px solid #e6e6fa; font-weight: bold; line-height: 1.4;
         }
-        .shake {
-            animation: shake 0.4s cubic-bezier(.36,.07,.19,.97) both;
-        }
-        @keyframes shake {
-            10%, 90% { transform: translate3d(-2px, 0, 0); }
-            20%, 80% { transform: translate3d(3px, 0, 0); }
-            30%, 50%, 70% { transform: translate3d(-5px, 0, 0); }
-            40%, 60% { transform: translate3d(5px, 0, 0); }
-        }
-        .jojo-text {
-            position: absolute;
-            font-size: 3em;
-            font-weight: 900;
-            color: transparent;
-            -webkit-text-stroke: 2px #ffd700;
-            opacity: 0;
-            pointer-events: none;
-        }
+        
+        /* 動畫特效 */
+        .shake { animation: shake 0.3s cubic-bezier(.36,.07,.19,.97) both; }
+        @keyframes shake { 10%, 90% { transform: translate3d(-2px, 0, 0); } 20%, 80% { transform: translate3d(3px, 0, 0); } 30%, 50%, 70% { transform: translate3d(-5px, 0, 0); } 40%, 60% { transform: translate3d(5px, 0, 0); } }
+        .crit-text { color: #ff1493; font-weight: 900; font-size: 1.1em; }
+        .ssr-text { color: #ff4500; font-weight: 900; font-size: 1.1em; text-shadow: 0 0 5px #ffd700; }
+        .boss-text { color: #da70d6; font-weight: 900; font-size: 1.1em; } /* Boss 名稱樣式 */
     </style>
 </head>
 <body>
 
 <div class="container" id="gameContainer">
-    <h1>替身戰鬥模擬器</h1>
-    <h3>本體：倉鼠 | 替身：Seed Harvester</h3>
+    <h1>✨ 替身戰鬥：可愛極限版 ✨</h1>
+    <h3>🐹 本體：倉鼠 | 替身：Seed Harvester 🌻</h3>
     
-    <div class="battle-zone">
-        <div class="enemy-name">敵方：邪惡野貓</div>
-        <div class="hp-bar-container">
-            <div class="hp-bar" id="enemyHpBar"></div>
-        </div>
-        <div id="hpText">HP: 1000 / 1000</div>
+    <div class="header-info">
+        <div class="level-info" id="levelDisplay">關卡：1</div>
+        <div class="timer" id="timerDisplay"></div>
     </div>
 
-    <div class="stats">
-        <div>持有葵花籽：<span id="seedCount">0</span> 粒</div>
+    <div class="battle-zone" id="battleZone">
+        <div class="enemy-emoji-display" id="enemyEmoji">🐷</div> <div class="hp-bar-container"><div class="hp-bar" id="enemyHpBar"></div></div>
+        <div id="hpText">HP: 100 / 100</div>
+    </div>
+
+    <div class="resource-zone">
+        <div class="seed-display">🌻 <span id="seedCount">0</span> 籽</div>
+        <div class="box-display">
+            🎁 <span id="boxCount">0</span>
+            <button class="btn-open-box" onclick="openBox()">開箱!</button>
+        </div>
+    </div>
+
+    <div class="shop-zone">
+        <div class="upgrade-item">
+            <span id="txt-atk">💪 攻擊力：10</span>
+            <button class="upgrade-btn" id="btn-atk" onclick="upgrade('atk')">升級 (20 籽)</button>
+        </div>
+        <div class="upgrade-item">
+            <span id="txt-critRate">🎯 爆擊率：5%</span>
+            <button class="upgrade-btn" id="btn-critRate" onclick="upgrade('critRate')">升級 (50 籽)</button>
+        </div>
+        <div class="upgrade-item">
+            <span id="txt-critDmg">💥 爆擊傷害：150%</span>
+            <button class="upgrade-btn" id="btn-critDmg" onclick="upgrade('critDmg')">升級 (100 籽)</button>
+        </div>
+        <div class="upgrade-item">
+            <span id="txt-seedBonus">🌻 獲取倍率：x1.0</span>
+            <button class="upgrade-btn" id="btn-seedBonus" onclick="upgrade('seedBonus')">升級 (150 籽)</button>
+        </div>
+        <div class="upgrade-item">
+            <span id="txt-standMult">👻 替身倍率：x15</span>
+            <button class="upgrade-btn" id="btn-standMult" onclick="upgrade('standMult')">升級 (300 籽)</button>
+        </div>
+        <div class="upgrade-item">
+            <span id="txt-cd">⏱️ 替身冷卻：10.0s</span>
+            <button class="upgrade-btn" id="btn-cd" onclick="upgrade('cd')">升級 (500 籽)</button>
+        </div>
+        <div class="upgrade-item">
+            <span id="txt-bossTime">⏳ Boss 時間：30s</span>
+            <button class="upgrade-btn" id="btn-bossTime" onclick="upgrade('bossTime')">升級 (800 籽)</button>
+        </div>
     </div>
 
     <div class="actions">
-        <button class="btn-attack" onclick="basicAttack()">倉鼠突擊 (收集種子)</button>
-        <button class="btn-skill" id="btnSkill" onclick="standAttack()" disabled>發動替身：Seed Harvester！(需 10 粒種子)</button>
+        <button class="btn-attack" onclick="basicAttack()">🐾 倉鼠突擊！</button>
+        <button class="btn-skill" id="btnSkill" onclick="standAttack()">🌻 召喚 Seed Harvester！</button>
     </div>
 
-    <div class="log" id="battleLog">
-        戰鬥開始！敵方野貓出現了！<br>
-    </div>
+    <div class="log" id="battleLog">戰鬥開始！努力收集葵花籽吧！🐹<br></div>
 </div>
 
 <script>
-    let enemyMaxHp = 1000;
-    let enemyHp = 1000;
+    let level = 1;
     let seeds = 0;
+    let blindBoxes = 0;
+    
+    let stats = { atk: 10, critRate: 0.05, critDmg: 1.5, seedBonus: 1.0, standMult: 15, cd: 10.0, bossTime: 30 };
+    let costs = { atk: 20, critRate: 50, critDmg: 100, seedBonus: 150, standMult: 300, cd: 500, bossTime: 800 };
 
+    let enemyMaxHp = 100;
+    let enemyHp = 100;
+    let isBoss = false;
+    let bossTimer;
+    let timeLeft = 30;
+    let skillReady = true;
+
+    // 30種敵人 emoji
+    const enemyEmojis = [
+        "🐷", "🐸", "🐶", "🐱", "🐭", "🐹", "🐰", "🦊", "🐻", "🐼",
+        "🐛", "🦋", "🐌", "🐞", "🐜", "🕷️", "🐝", "蠍🦂", "🦗", "🦟",
+        "👻", "👾", "👽", "🤖", "💩", "🤡", "👹", "💀", "🧟", "🧙"
+    ];
+    // Boss emoji (可自定義，目前選了一個看起來比較怪的)
+    const bossEmoji = "👾";
+
+    const battleZone = document.getElementById('battleZone');
+    const enemyEmojiDisplay = document.getElementById('enemyEmoji');
     const hpBar = document.getElementById('enemyHpBar');
     const hpText = document.getElementById('hpText');
     const seedDisplay = document.getElementById('seedCount');
+    const boxDisplay = document.getElementById('boxCount');
+    const timerDisplay = document.getElementById('timerDisplay');
     const btnSkill = document.getElementById('btnSkill');
     const battleLog = document.getElementById('battleLog');
-    const gameContainer = document.getElementById('gameContainer');
 
-    function logMessage(msg) {
-        battleLog.innerHTML = msg + "<br>" + battleLog.innerHTML;
-    }
-
-    function updateUI() {
-        hpBar.style.width = (enemyHp / enemyMaxHp * 100) + '%';
-        hpText.innerText = `HP: ${enemyHp} / ${enemyMaxHp}`;
-        seedDisplay.innerText = seeds;
-        
-        if (seeds >= 10) {
-            btnSkill.disabled = false;
-            btnSkill.style.animation = "shake 1s infinite";
-        } else {
-            btnSkill.disabled = true;
-            btnSkill.style.animation = "none";
-        }
-
-        if (enemyHp <= 0) {
-            hpBar.style.width = '0%';
-            hpText.innerText = "HP: 0 / 1000";
-            logMessage("<span style='color:#ffd700'>戰鬥勝利！敵方再起不能 (Retire)！</span>");
-            document.querySelector('.actions').style.display = 'none';
-        }
-    }
-
-    function basicAttack() {
-        if (enemyHp <= 0) return;
-        
-        let damage = Math.floor(Math.random() * 20) + 10; // 10~30 傷害
-        let gainedSeeds = Math.floor(Math.random() * 3) + 1; // 獲得 1~3 顆種子
-        
-        enemyHp -= damage;
-        seeds += gainedSeeds;
-        
-        logMessage(`本體(倉鼠)發動衝撞！造成 ${damage} 點傷害，收集了 ${gainedSeeds} 粒葵花籽！`);
-        
-        gameContainer.classList.remove('shake');
-        void gameContainer.offsetWidth; // 觸發重繪
-        gameContainer.classList.add('shake');
-        
-        updateUI();
-    }
-
-    function showJoJoText() {
-        const text = document.createElement('div');
-        text.className = 'jojo-text';
-        text.innerText = 'ドドドドドド';
-        text.style.left = Math.random() * 60 + 20 + '%';
-        text.style.top = Math.random() * 60 + 20 + '%';
-        document.body.appendChild(text);
-        
-        let opacity = 1;
-        text.style.opacity = opacity;
-        
-        const fade = setInterval(() => {
-            opacity -= 0.05;
-            text.style.opacity = opacity;
-            text.style.transform = `translateY(-${(1-opacity)*50}px)`;
-            if (opacity <= 0) {
-                clearInterval(fade);
-                text.remove();
-            }
-        }, 50);
-    }
-
-    function standAttack() {
-        if (enemyHp <= 0 || seeds < 10) return;
-        
-        seeds -= 10;
-        let damage = Math.floor(Math.random() * 150) + 200; // 200~350 爆發傷害
-        enemyHp -= damage;
-        
-        logMessage(`<span style='color:#ff00ff; font-weight:bold;'>Seed Harvester 顯現！「種子機關槍！」造成 ${damage} 點巨大傷害！</span>`);
-        
-        // 畫面震動與特效
+    function logMessage(msg) { battleLog.innerHTML = msg + "<br>" + battleLog.innerHTML; }
+    function triggerShake() {
+        const gameContainer = document.getElementById('gameContainer');
         gameContainer.classList.remove('shake');
         void gameContainer.offsetWidth; 
         gameContainer.classList.add('shake');
+    }
+
+    window.openBox = function() {
+        if (blindBoxes <= 0) { logMessage("<span style='color:#a9a9a9'>沒有盲盒了喔！快去打怪！</span>"); return; }
+        blindBoxes--;
         
-        for(let i=0; i<5; i++) {
-            setTimeout(showJoJoText, i * 200);
+        let roll = Math.random();
+        if (roll < 0.01) { 
+            stats.atk *= 2; 
+            logMessage(`<span class='ssr-text'>🎰 SSR大獎！！基礎攻擊力永久翻倍！</span>`);
+        } else if (roll < 0.10) { 
+            let hugeSeeds = Math.floor(seeds * 1.5) + 5000; seeds += hugeSeeds;
+            logMessage(`<span style='color:#20b2aa;'>🎰 SR賞！天降橫財，獲得 ${hugeSeeds} 籽！</span>`);
+        } else if (roll < 0.40) { 
+            stats.standMult += 5;
+            logMessage(`<span style='color:#32cd32'>🎰 R賞！替身覺醒，傷害倍率增加！</span>`);
+        } else if (roll < 0.70) { 
+            let smallSeeds = 500 * level; seeds += smallSeeds;
+            logMessage(`獲得安慰獎 ${smallSeeds} 籽 🌻`);
+        } else { 
+            logMessage("<span style='color:#ff6347'>打開盲盒...裡面只有一團棉花。(血虧) 😿</span>");
         }
-        
         updateUI();
     }
+
+    function spawnEnemy() {
+        clearInterval(bossTimer);
+        timerDisplay.innerText = "";
+        isBoss = (level % 20 === 0);
+        
+        let baseHp = Math.floor(100 * Math.pow(1.18, level - 1)); 
+        
+        if (isBoss) {
+            enemyMaxHp = baseHp * 15; 
+            battleZone.classList.add('boss-active'); // 加入 Boss 樣式
+            enemyEmojiDisplay.innerText = bossEmoji; // 顯示 Boss emoji
+            
+            timeLeft = stats.bossTime;
+            timerDisplay.innerText = `⏳ 剩餘：${timeLeft}s`;
+            // 修正為顯示 emoji 的 Boss 關卡文字
+            document.getElementById('enemyEmoji').innerHTML += `<div class="boss-text">⚠️ Boss ${bossEmoji} ⚠️</div>`;
+
+            bossTimer = setInterval(() => {
+                timeLeft--;
+                timerDisplay.innerText = `⏳ 剩餘：${timeLeft}s`;
+                if (timeLeft <= 0) {
+                    clearInterval(bossTimer);
+                    logMessage(`<span style='color:red'>時間到！Boss ${bossEmoji} 逃跑了，退回上一關。</span>`);
+                    level--;
+                    spawnEnemy();
+                }
+            }, 1000);
+        } else {
+            enemyMaxHp = baseHp;
+            battleZone.classList.remove('boss-active'); // 移除 Boss 樣式
+            // 隨機選一個小怪 emoji，並確保 Boss 的樣式不會影響到小怪
+            enemyEmojiDisplay.innerText = enemyEmojis[Math.floor(Math.random() * enemyEmojis.length)];
+            // 移除可能存在的 Boss 文字描述
+            const existingBossText = document.querySelector('.boss-text');
+            if (existingBossText) existingBossText.remove();
+        }
+        enemyHp = enemyMaxHp;
+        updateUI();
+    }
+
+    function enemyDied() {
+        // 獲取當前敵人 emoji 用於 log
+        const diedEnemyEmoji = enemyEmojiDisplay.innerText;
+        let baseReward = isBoss ? level * 100 : level * 10;
+        let finalReward = Math.floor(baseReward * stats.seedBonus);
+        seeds += finalReward;
+        
+        // 戰鬥 log 顯示敵人 emoji
+        let dropMsg = `打敗了 ${diedEnemyEmoji}！獲得 ${finalReward} 籽！`;
+
+        if (isBoss) {
+            let bossDrops = Math.floor(Math.random() * 3) + 1; blindBoxes += bossDrops;
+            dropMsg += ` <span style='color:#da70d6;'>🎁 掉落 ${bossDrops} 個盲盒！</span>`;
+        } else if (Math.random() < 0.15) {
+            blindBoxes++;
+            dropMsg += ` <span style='color:#da70d6;'>🎁 掉落 1 個盲盒！</span>`;
+        }
+
+        logMessage(dropMsg);
+        level++;
+        spawnEnemy();
+    }
+
+    function updateUI() {
+        hpBar.style.width = Math.max(0, (enemyHp / enemyMaxHp * 100)) + '%';
+        hpText.innerText = `HP: ${Math.ceil(enemyHp)} / ${enemyMaxHp}`;
+        document.getElementById('levelDisplay').innerText = `關卡：${level}`;
+        seedDisplay.innerText = Math.floor(seeds);
+        boxDisplay.innerText = blindBoxes;
+
+        document.getElementById('txt-atk').innerText = `💪 攻擊力：${stats.atk}`;
+        document.getElementById('txt-critRate').innerText = `🎯 爆擊率：${(stats.critRate * 100).toFixed(1)}%`;
+        document.getElementById('txt-critDmg').innerText = `💥 爆擊傷害：${(stats.critDmg * 100).toFixed(0)}%`;
+        document.getElementById('txt-seedBonus').innerText = `🌻 獲取倍率：x${stats.seedBonus.toFixed(1)}`;
+        document.getElementById('txt-standMult').innerText = `👻 替身倍率：x${stats.standMult}`;
+        document.getElementById('txt-cd').innerText = `⏱️ 替身冷卻：${stats.cd.toFixed(1)}s`;
+        document.getElementById('txt-bossTime').innerText = `⏳ Boss 時間：${stats.bossTime}s`;
+
+        const uiMap = ['atk', 'critRate', 'critDmg', 'seedBonus', 'standMult', 'cd', 'bossTime'];
+        uiMap.forEach(type => {
+            let btn = document.getElementById(`btn-${type}`);
+            if (type === 'critRate' && stats.critRate >= 1.0) { btn.innerText = "已滿級"; btn.disabled = true; return; }
+            if (type === 'cd' && stats.cd <= 2.0) { btn.innerText = "極限了"; btn.disabled = true; return; }
+            btn.innerText = `升級 (${costs[type]} 籽)`;
+            btn.disabled = seeds < costs[type];
+        });
+    }
+
+    window.upgrade = function(type) {
+        if (seeds >= costs[type]) {
+            seeds -= costs[type];
+            if (type === 'atk') { stats.atk += 20; costs.atk = Math.floor(costs.atk * 1.6); }
+            if (type === 'critRate') { stats.critRate += 0.05; costs.critRate = Math.floor(costs.critRate * 2.0); } 
+            if (type === 'critDmg') { stats.critDmg += 0.5; costs.critDmg = Math.floor(costs.critDmg * 1.8); } 
+            if (type === 'seedBonus') { stats.seedBonus += 0.5; costs.seedBonus = Math.floor(costs.seedBonus * 2.0); }
+            if (type === 'standMult') { stats.standMult += 5; costs.standMult = Math.floor(costs.standMult * 1.8); }
+            if (type === 'cd') { stats.cd -= 0.5; costs.cd = Math.floor(costs.cd * 2.2); }
+            if (type === 'bossTime') { stats.bossTime += 2; costs.bossTime = Math.floor(costs.bossTime * 1.5); }
+            updateUI();
+        }
+    }
+
+    function calculateDamage(multiplier = 1) {
+        let isCrit = Math.random() < stats.critRate;
+        let dmg = stats.atk * multiplier * (0.9 + Math.random() * 0.2); 
+        if (isCrit) dmg *= stats.critDmg;
+        return { dmg: Math.floor(dmg), isCrit: isCrit };
+    }
+
+    window.basicAttack = function() {
+        if (enemyHp <= 0) return;
+        let hit = calculateDamage(1);
+        enemyHp -= hit.dmg;
+        seeds += Math.floor((Math.floor(level / 2) + 1) * stats.seedBonus); 
+        
+        let msg = `造成 ${hit.dmg} 傷害！`;
+        if (hit.isCrit) msg = `<span class='crit-text'>爆擊！${msg}</span>`;
+        logMessage(msg);
+        
+        triggerShake();
+        if (enemyHp <= 0) enemyDied();
+        else updateUI();
+    }
+
+    window.standAttack = function() {
+        if (enemyHp <= 0 || !skillReady) return;
+        let hit = calculateDamage(stats.standMult);
+        enemyHp -= hit.dmg;
+        
+        logMessage(`<span style='color:#ba55d3;'>Seed Harvester 歐拉連打！造成 ${hit.dmg} 傷害！👻</span>`);
+        triggerShake();
+        
+        skillReady = false;
+        let currentCd = stats.cd;
+        btnSkill.disabled = true;
+        
+        let cdInterval = setInterval(() => {
+            currentCd -= 0.1;
+            btnSkill.innerText = `冷卻中 (${currentCd.toFixed(1)}s)`;
+            if (currentCd <= 0) {
+                clearInterval(cdInterval);
+                skillReady = true;
+                btnSkill.disabled = false;
+                btnSkill.innerText = "🌻 召喚 Seed Harvester！";
+            }
+        }, 100);
+
+        if (enemyHp <= 0) enemyDied();
+        else updateUI();
+    }
+
+    spawnEnemy();
 </script>
 </body>
 </html>

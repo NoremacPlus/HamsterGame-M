@@ -2,414 +2,377 @@
 <html lang="zh-TW">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>替身戰鬥：標籤收納版 V8 (全域零縮放極速版)</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>奇幻異世界：無限轉蛋機</title>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Nunito:wght@700;900&family=Noto+Sans+TC:wght@500;700;900&display=swap');
-        
-        /* ==========================================
-           全域零延遲防縮放 CSS 指令
-           ========================================== */
-        * {
-            -webkit-user-select: none;
-            -moz-user-select: none;
-            -ms-user-select: none;
-            user-select: none;
-            -webkit-touch-callout: none;
-            -webkit-tap-highlight-color: transparent;
-            /* 這是最關鍵的一行，全面禁止任何手勢、選取、縮放 */
-            touch-action: none; 
-        }
-        
-        /* 確保可以上下滑動的地方正常運作 (主要是商店) */
-        .tab-content.active {
-            touch-action: pan-y;
-        }
-
+        /* 基礎重置與背景 */
         body {
-            font-family: 'Nunito', 'Noto Sans TC', sans-serif;
-            background-color: #fff0f5; 
-            background-image: radial-gradient(#ffd1dc 2px, transparent 2px);
-            background-size: 30px 30px; 
-            color: #5d4037; 
-            display: flex; justify-content: center; align-items: center;
-            height: 100dvh; margin: 0; padding: 10px; box-sizing: border-box; overflow: hidden; 
-            overscroll-behavior-y: contain;
-        }
-        
-        .container {
-            background: #ffffff; padding: 10px 15px 0 15px; border-radius: 25px;
-            box-shadow: 0 8px 20px rgba(255, 182, 193, 0.6); width: 100%; max-width: 450px;
-            height: 100%; max-height: 850px; display: flex; flex-direction: column;
-            border: 4px solid #ffb6c1; box-sizing: border-box; position: relative; overflow: hidden;
+            background-color: #ffffff;
+            color: #333333;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            text-align: center;
+            margin: 0;
+            padding: 20px;
         }
 
-        .log-top {
-            height: 55px; background: #fff8dc; padding: 8px 12px; border-radius: 12px;
-            font-size: 0.8em; color: #5d4037; overflow-y: hidden; text-align: left;
-            border: 2px dashed #ffb6c1; font-weight: bold; line-height: 1.5; margin-bottom: 5px;
-        }
-        
-        .header-info {
-            display: flex; justify-content: space-between; align-items: center;
-            margin-bottom: 5px; background: #ffe4e1; padding: 5px 15px; border-radius: 15px;
-        }
-        .level-info { font-size: 0.85em; font-weight: 900; color: #20b2aa; }
-        .timer { color: #ff6b81; font-size: 0.9em; font-weight: 900; }
-        
-        .battle-zone {
-            background-color: #fdf5e6; padding: 10px 15px; border-radius: 20px;
-            margin-bottom: 10px; text-align: center; border: 2px dashed #ffb6c1;
-            display: flex; flex-direction: column; align-items: center; justify-content: center;
-            min-height: 160px; position: relative;
-        }
-        
-        #btn-challenge-boss {
-            display: none; position: absolute; top: 8px; right: 8px;
-            background: #ff4c4c; color: white; border: none; padding: 5px 10px;
-            border-radius: 10px; font-weight: 900; font-size: 0.8em; cursor: pointer;
-            box-shadow: 0 3px 0 #c0392b; z-index: 10;
-        }
-        #btn-challenge-boss:active { transform: translateY(4px); box-shadow: none; }
-        
-        .enemy-name { font-size: 0.85em; font-weight: 900; color: #a0522d; margin-bottom: 5px; }
-        .enemy-emoji-display { font-size: 2.5em; margin-bottom: 5px; transition: all 0.3s; }
-        .boss-active .enemy-emoji-display { font-size: 3.5em; transform: scale(1.1); }
-        
-        .hp-bar-container {
-            width: 100%; background-color: #ffe4e1; height: 14px;
-            border-radius: 7px; overflow: hidden; border: 2px solid #ffc0cb;
-        }
-        .hp-bar { height: 100%; background-color: #ff6b81; width: 100%; transition: width 0.1s; }
-        #hpText { font-weight: bold; color: #d2691e; margin-top: 3px; font-size: 0.8em; }
-        
-        .tab-container { display: flex; flex-direction: column; flex-grow: 1; overflow: hidden; margin-bottom: 10px; }
-        .tabs { display: flex; gap: 5px; }
-        .tab-btn {
-            flex: 1; padding: 8px; background: #ffe4e1; border: 2px solid #add8e6; border-bottom: none;
-            border-radius: 12px 12px 0 0; cursor: pointer; font-weight: 900; color: #a0522d; font-size: 0.9em;
-        }
-        .tab-btn.active { background: #f0f8ff; border-bottom: 2px solid #f0f8ff; color: #20b2aa; }
-        .tab-content {
-            display: none; background: #f0f8ff; border: 2px solid #add8e6; border-radius: 0 0 12px 12px;
-            padding: 10px; flex-grow: 1; overflow-y: auto;
-        }
-        .tab-content.active { display: block; }
+        h1 { margin-bottom: 5px; }
+        p.subtitle { color: #666; margin-bottom: 30px; }
 
-        .upgrade-item { display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; font-size: 0.8em; background: #fff; padding: 5px 8px; border-radius: 8px; }
-        .upgrade-btn { background-color: #87ceeb; padding: 4px 8px; color: #fff; border:none; border-radius:6px; font-weight: bold; }
-        .upgrade-btn:disabled { background-color: #d3d3d3; }
+        /* 稀有度顏色 */
+        .color-N { color: #808080; border-bottom: 5px solid #808080; }
+        .color-R { color: #1E90FF; border-bottom: 5px solid #1E90FF; }
+        .color-SR { color: #8A2BE2; border-bottom: 5px solid #8A2BE2; }
+        .color-SSR { color: #FFD700; border-bottom: 5px solid #FFD700; text-shadow: 0 0 5px rgba(255,215,0,0.5); }
 
-        .box-ui { text-align: center; padding: 5px 0; }
-        .btn-open-box {
-            background: linear-gradient(45deg, #ff9a9e 0%, #fecfef 100%);
-            padding: 10px 20px; border-radius: 20px; border: none; font-weight: 900; cursor: pointer; color: #5d4037;
+        /* 輪盤區域 (CSGO 模式) */
+        .roulette-container {
+            width: 800px;
+            max-width: 95%;
+            height: 150px;
+            margin: 0 auto;
+            border: 2px solid #ccc;
+            border-radius: 10px;
+            background-color: #f9f9f9;
+            position: relative;
+            overflow: hidden;
+            box-shadow: inset 0 0 10px rgba(0,0,0,0.1);
         }
 
-        .action-zone { margin-bottom: 5px; }
-        .small-resource { text-align: right; font-size: 0.9em; font-weight: 900; color: #d2691e; margin-bottom: 4px; padding-right: 5px; }
-        .actions { display: flex; gap: 6px; flex-direction: column; }
-        
-        .btn-attack, .btn-skill { padding: 10px; font-size: 1em; font-weight: 900; border: none; border-radius: 12px; cursor: pointer; }
-        .btn-attack { background: #ffd700; color: #a0522d; box-shadow: 0 4px 0 #daa520; }
-        .btn-attack:active { transform: translateY(4px); box-shadow: none; }
-        .btn-skill { background: #dda0dd; color: #fff; box-shadow: 0 4px 0 #ba55d3; }
-        .btn-skill:active { transform: translateY(4px); box-shadow: none; }
-        .btn-skill:disabled { background: #e6e6e6 !important; box-shadow: none; color: #aaa; transform: none; }
-        
-        .log-latest {
-            height: 35px; background: #333; padding: 0 15px;
-            font-size: 0.85em; color: #00ffcc; text-align: center; 
-            border-radius: 12px 12px 0 0; font-weight: bold; line-height: 35px;
-            white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
-            margin: 0 -15px 0 -15px;
+        /* 輪盤中央指示線 */
+        .pointer {
+            position: absolute;
+            top: 0;
+            left: 50%;
+            width: 4px;
+            height: 100%;
+            background-color: #ff3b3b;
+            transform: translateX(-50%);
+            z-index: 10;
+            box-shadow: 0 0 5px rgba(255, 59, 59, 0.8);
         }
 
-        .shake { animation: shake 0.1s cubic-bezier(.36,.07,.19,.97) both; }
-        @keyframes shake { 0% { transform: translate3d(-2px, 0, 0); } 50% { transform: translate3d(2px, 0, 0); } 100% { transform: translate3d(0, 0, 0); } }
+        /* 滾動條 */
+        .strip {
+            display: flex;
+            height: 100%;
+            width: max-content;
+            align-items: center;
+        }
+
+        /* 單個蛋的卡片 */
+        .egg-card {
+            width: 120px;
+            height: 120px;
+            margin: 0 5px;
+            background: #fff;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            flex-shrink: 0;
+            box-sizing: border-box;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+        }
+
+        .egg-card .rarity { font-weight: bold; font-size: 1.2em; margin-bottom: 5px; }
+        .egg-card .name { font-size: 0.9em; padding: 0 5px; word-break: break-all; }
+
+        /* 按鈕區域 */
+        .controls { margin-top: 30px; }
+        button {
+            padding: 12px 25px;
+            font-size: 1.1em;
+            margin: 0 10px;
+            cursor: pointer;
+            border: none;
+            border-radius: 25px;
+            font-weight: bold;
+            transition: transform 0.1s, background-color 0.2s;
+        }
+        button:active { transform: scale(0.95); }
+        button:disabled { opacity: 0.5; cursor: not-allowed; }
+
+        .btn-draw { background-color: #4CAF50; color: white; box-shadow: 0 4px 6px rgba(76, 175, 80, 0.3); }
+        .btn-draw:hover { background-color: #45a049; }
+        .btn-fridge { background-color: #2196F3; color: white; box-shadow: 0 4px 6px rgba(33, 150, 243, 0.3); }
+        .btn-fridge:hover { background-color: #1e88e5; }
+
+        /* 結果顯示 */
+        #result-display {
+            margin-top: 20px;
+            font-size: 1.5em;
+            font-weight: bold;
+            min-height: 40px;
+        }
+
+        /* 冰箱彈出視窗 (Modal) */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.5);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+        .modal {
+            background: white;
+            width: 80%;
+            max-width: 800px;
+            max-height: 80vh;
+            border-radius: 15px;
+            padding: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            display: flex;
+            flex-direction: column;
+        }
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 2px solid #eee;
+            padding-bottom: 10px;
+            margin-bottom: 15px;
+        }
+        .close-btn {
+            background: #ff4d4d;
+            color: white;
+            border-radius: 50%;
+            width: 30px; height: 30px;
+            padding: 0;
+            line-height: 30px;
+            text-align: center;
+        }
+        .fridge-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+            gap: 10px;
+            overflow-y: auto;
+            flex-grow: 1;
+            padding: 5px;
+        }
+        .inventory-item {
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            padding: 10px 5px;
+            font-size: 0.85em;
+            position: relative;
+        }
+        .inventory-item .count {
+            position: absolute;
+            top: -5px; right: -5px;
+            background: #333; color: white;
+            border-radius: 10px;
+            padding: 2px 6px;
+            font-size: 0.8em;
+        }
     </style>
 </head>
 <body>
 
-<div class="container" id="gameContainer">
-    <div class="log-top" id="battleLogTop">🐹 準備開始戰鬥！努力收集葵花籽吧！</div>
-    
-    <div class="header-info">
-        <div class="level-info" id="levelDisplay">關卡：1</div>
-        <div class="timer" id="timerDisplay"></div>
-    </div>
+    <h1>🥚 奇幻異世界轉蛋機 🥚</h1>
+    <p class="subtitle">免費無代價，抽出你的奇蹟！(配率：N 60%, R 25%, SR 10%, SSR 5%)</p>
 
-    <div class="battle-zone" id="battleZone">
-        <button id="btn-challenge-boss">挑戰 BOSS</button>
-        <div class="enemy-name" id="enemyNameDisplay">載入中...</div>
-        <div class="enemy-emoji-display" id="enemyEmoji">🐾</div>
-        <div class="hp-bar-container"><div class="hp-bar" id="enemyHpBar"></div></div>
-        <div id="hpText">HP: 0 / 0</div>
-    </div>
-
-    <div class="tab-container">
-        <div class="tabs">
-            <button class="tab-btn active" id="btnTabUpgrade">🏪 商店</button>
-            <button class="tab-btn" id="btnTabBox">🎁 盲盒</button>
-        </div>
-        
-        <div id="tab-upgrade" class="tab-content active">
-            <div class="upgrade-item"><span id="txt-atk">💪 攻擊：10</span><button class="upgrade-btn" id="btn-atk">升級</button></div>
-            <div class="upgrade-item"><span id="txt-critRate">🎯 爆率：5%</span><button class="upgrade-btn" id="btn-critRate">升級</button></div>
-            <div class="upgrade-item"><span id="txt-critDmg">💥 爆傷：150%</span><button class="upgrade-btn" id="btn-critDmg">升級</button></div>
-            <div class="upgrade-item"><span id="txt-seedBonus">🌻 掉落：x1.0</span><button class="upgrade-btn" id="btn-seedBonus">升級</button></div>
-            <div class="upgrade-item"><span id="txt-standMult">👻 替身：x15</span><button class="upgrade-btn" id="btn-standMult">升級</button></div>
-            <div class="upgrade-item"><span id="txt-cd">⏱️ 冷卻：10.0s</span><button class="upgrade-btn" id="btn-cd">升級</button></div>
-            <div class="upgrade-item"><span id="txt-bossTime">⏳ Boss：30s</span><button class="upgrade-btn" id="btn-bossTime">升級</button></div>
-        </div>
-
-        <div id="tab-box" class="tab-content">
-            <div class="box-ui">
-                <div style="font-weight:900; margin-bottom:10px;">擁有盲盒：<span id="boxCount">0</span> 個</div>
-                <button class="btn-open-box" id="btnOpenBox">🎲 開啟幸運盒</button>
-                <div style="font-size:0.75em; color:#888; margin-top:15px; line-height:1.4;">15種驚喜獎項：SSR攻擊翻倍、<br>海量種子、盲盒連抽...</div>
+    <div class="roulette-container">
+        <div class="pointer"></div>
+        <div class="strip" id="roulette-strip">
             </div>
-        </div>
     </div>
 
-    <div class="action-zone">
-        <div class="small-resource">🌻 <span id="seedCount">0</span> 籽</div>
-        <div class="actions">
-            <button class="btn-attack" id="btnAttackMain">🐾 倉鼠突擊！</button>
-            <button class="btn-skill" id="btnSkillMain">🌻 Seed Harvester！</button>
-        </div>
+    <div class="controls">
+        <button class="btn-draw" id="btn-draw" onclick="roll()">🎰 抽一次</button>
+        <button class="btn-fridge" onclick="toggleFridge()">❄️ 打開冰箱</button>
     </div>
 
-    <div class="log-latest" id="latestMessage">等待指令...</div>
-</div>
+    <div id="result-display">等待抽取...</div>
+
+    <div class="modal-overlay" id="fridge-modal">
+        <div class="modal">
+            <div class="modal-header">
+                <h2>❄️ 我的冰箱 (收藏庫)</h2>
+                <button class="close-btn" onclick="toggleFridge()">X</button>
+            </div>
+            <div class="fridge-grid" id="fridge-grid">
+                </div>
+        </div>
+    </div>
 
 <script>
-    let level = 1; let seeds = 0; let blindBoxes = 0;
-    let stats = { atk: 10, critRate: 0.05, critDmg: 1.5, seedBonus: 1.0, standMult: 15, cd: 10.0, bossTime: 30 };
-    let costs = { atk: 20, critRate: 50, critDmg: 100, seedBonus: 150, standMult: 300, cd: 500, bossTime: 800 };
-    let enemyMaxHp = 100; let enemyHp = 100; 
-    let isBoss = false; let bossPending = false; 
-    let bossTimer; let timeLeft = 30; let skillReady = true;
-
-    const enemyData = [
-        {e:"🐷", n:"貪吃小豬"}, {e:"🐸", n:"呱呱青蛙"}, {e:"🐶", n:"單身汪汪"}, {e:"🐱", n:"傲嬌貓咪"}, {e:"🐭", n:"下水道鼠"},
-        {e:"🐹", n:"野生同伴"}, {e:"🐰", n:"暴力兔兔"}, {e:"🦊", n:"狡猾狐狸"}, {e:"🐻", n:"暴走熊熊"}, {e:"🐼", n:"功夫熊貓"}
+    // 50 種蛋的資料庫 (N: 25, R: 10, SR: 10, SSR: 5)
+    const eggs = [
+        // SSR (5種)
+        { id: 1, name: "創世神龍蛋", rarity: "SSR" }, { id: 2, name: "宇宙星塵蛋", rarity: "SSR" },
+        { id: 3, name: "絕對零度冰晶蛋", rarity: "SSR" }, { id: 4, name: "鳳凰涅槃蛋", rarity: "SSR" },
+        { id: 5, name: "混沌暗物質蛋", rarity: "SSR" },
+        // SR (10種)
+        { id: 6, name: "熔岩巨獸蛋", rarity: "SR" }, { id: 7, name: "雷霆風暴蛋", rarity: "SR" },
+        { id: 8, name: "聖光天使蛋", rarity: "SR" }, { id: 9, name: "深海巨鯨蛋", rarity: "SR" },
+        { id: 10, name: "劇毒沼澤蛋", rarity: "SR" }, { id: 11, name: "幻影精靈蛋", rarity: "SR" },
+        { id: 12, name: "霸王龍化石蛋", rarity: "SR" }, { id: 13, name: "極光魔法蛋", rarity: "SR" },
+        { id: 14, name: "虛空裂縫蛋", rarity: "SR" }, { id: 15, name: "機械賽博蛋", rarity: "SR" },
+        // R (10種)
+        { id: 16, name: "火焰鳥蛋", rarity: "R" }, { id: 17, name: "冰霜史萊姆蛋", rarity: "R" },
+        { id: 18, name: "寶石甲蟲蛋", rarity: "R" }, { id: 19, name: "黃金野豬蛋", rarity: "R" },
+        { id: 20, name: "森林樹精蛋", rarity: "R" }, { id: 21, name: "狂風巨鷹蛋", rarity: "R" },
+        { id: 22, name: "岩石石像鬼蛋", rarity: "R" }, { id: 23, name: "幽靈蝙蝠蛋", rarity: "R" },
+        { id: 24, name: "劇毒蜘蛛蛋", rarity: "R" }, { id: 25, name: "鐵甲海龜蛋", rarity: "R" },
+        // N (25種)
+        { id: 26, name: "普通雞蛋", rarity: "N" }, { id: 27, name: "褐色土雞蛋", rarity: "N" },
+        { id: 28, name: "白鴨蛋", rarity: "N" }, { id: 29, name: "斑紋鵪鶉蛋", rarity: "N" },
+        { id: 30, name: "大鵝蛋", rarity: "N" }, { id: 31, name: "非洲鴕鳥蛋", rarity: "N" },
+        { id: 32, name: "小鴿子蛋", rarity: "N" }, { id: 33, name: "綠頭鴨蛋", rarity: "N" },
+        { id: 34, name: "烏龜蛋", rarity: "N" }, { id: 35, name: "青蛇蛋", rarity: "N" },
+        { id: 36, name: "鱷魚蛋", rarity: "N" }, { id: 37, name: "蜥蜴蛋", rarity: "N" },
+        { id: 38, name: "青蛙卵", rarity: "N" }, { id: 39, name: "鮭魚卵", rarity: "N" },
+        { id: 40, name: "企鵝蛋", rarity: "N" }, { id: 41, name: "燕子蛋", rarity: "N" },
+        { id: 42, name: "貓頭鷹蛋", rarity: "N" }, { id: 43, name: "孔雀蛋", rarity: "N" },
+        { id: 44, name: "火雞蛋", rarity: "N" }, { id: 45, name: "鷓鴣蛋", rarity: "N" },
+        { id: 46, name: "喜鵲蛋", rarity: "N" }, { id: 47, name: "海鷗蛋", rarity: "N" },
+        { id: 48, name: "烏鴉蛋", rarity: "N" }, { id: 49, name: "白鷺蛋", rarity: "N" },
+        { id: 50, name: "斑鳩蛋", rarity: "N" }
     ];
 
-    const prizePool = [
-        { n: "SSR 攻擊翻倍", f: () => { stats.atk *= 2; return "SSR級獎項！攻擊力永久翻倍！"; } },
-        { n: "海量種子", f: () => { let s = level * 1000; seeds += s; return `獲得海量種子 ${s} 籽！`; } },
-        { n: "替身強化", f: () => { stats.standMult += 10; return "替身倍率永久提升 10！"; } },
-        { n: "爆擊之魂", f: () => { stats.critRate += 0.05; return "爆擊率永久提升 5%！"; } },
-        { n: "爆傷之刃", f: () => { stats.critDmg += 0.5; return "爆擊傷害永久提升 50%！"; } },
-        { n: "幸運種子盒", f: () => { blindBoxes += 3; return "幸運連連！額外獲得 3 個盲盒！"; } },
-        { n: "時間包囊", f: () => { stats.bossTime += 5; return "BOSS 時間永久延長 5 秒！"; } },
-        { n: "掉落增幅", f: () => { stats.seedBonus += 0.2; return "種子掉落倍率提升 x0.2！"; } },
-        { n: "快速冷卻", f: () => { stats.cd = Math.max(2, stats.cd - 0.2); return "技能冷卻縮短 0.2 秒！"; } },
-        { n: "迷你種子袋", f: () => { seeds += 500; return "獲得 500 籽。"; } },
-        { n: "戰鬥補給", f: () => { seeds += level * 200; return "獲得一袋戰鬥補給。"; } },
-        { n: "替身殘影", f: () => { stats.standMult += 2; return "替身強度微幅提升。"; } },
-        { n: "爆擊碎片", f: () => { stats.critRate += 0.01; return "爆擊率微幅提升。"; } },
-        { n: "種子福袋", f: () => { seeds += 2000; return "幸運地撿到大福袋！"; } },
-        { n: "盲盒連抽", f: () => { blindBoxes += 1; return "再送一盒！"; } }
-    ];
+    let inventory = {}; // 記錄冰箱內容 { 蛋的id: 數量 }
+    let isRolling = false; // 防止連續點擊
 
-    const logTop = document.getElementById('battleLogTop');
-    const latestMessageObj = document.getElementById('latestMessage');
-    const gameContainer = document.getElementById('gameContainer');
+    // 根據機率隨機抽出一顆蛋
+    function getRandomEgg() {
+        const rand = Math.random() * 100;
+        let rarityTarget = '';
+        
+        // 配率: N 60%, R 25%, SR 10%, SSR 5%
+        if (rand < 5) rarityTarget = 'SSR';
+        else if (rand < 15) rarityTarget = 'SR';
+        else if (rand < 40) rarityTarget = 'R';
+        else rarityTarget = 'N';
 
-    function logMessage(msgHtml) {
-        logTop.innerHTML = msgHtml + "<br>" + logTop.innerHTML;
-        latestMessageObj.innerHTML = msgHtml;
+        const pool = eggs.filter(e => e.rarity === rarityTarget);
+        return pool[Math.floor(Math.random() * pool.length)];
     }
 
-    function spawnEnemy() {
-        clearInterval(bossTimer); document.getElementById('timerDisplay').innerText = "";
-        if (level > 0 && level % 10 === 0 && !bossPending) {
-            startBossFight();
-        } else {
-            isBoss = false;
-            document.getElementById('battleZone').classList.remove('boss-active');
-            let data = enemyData[Math.floor(Math.random() * enemyData.length)];
-            document.getElementById('enemyEmoji').innerText = data.e;
-            document.getElementById('enemyNameDisplay').innerText = data.n + ` (Lv.${level})`;
-            enemyMaxHp = Math.floor(100 * Math.exp(k_value * level));
-            enemyHp = enemyMaxHp;
-            document.getElementById('hpText').innerHTML = `HP: ${enemyHp} / ${enemyMaxHp}`;
+    // 生成單張卡片的 HTML
+    function createEggCard(egg) {
+        const card = document.createElement('div');
+        card.className = `egg-card color-${egg.rarity}`;
+        card.innerHTML = `
+            <div class="rarity">${egg.rarity}</div>
+            <div class="name">${egg.name}</div>
+        `;
+        return card;
+    }
+
+    // 執行抽獎
+    function roll() {
+        if (isRolling) return;
+        isRolling = true;
+        document.getElementById('btn-draw').disabled = true;
+        document.getElementById('result-display').innerHTML = "轉動中...";
+
+        const strip = document.getElementById('roulette-strip');
+        
+        // 重置動畫與位置
+        strip.style.transition = 'none';
+        strip.style.transform = 'translateX(0px)';
+        strip.innerHTML = '';
+        
+        // 決定這次抽獎的結果
+        const winningEgg = getRandomEgg();
+        
+        // 建立假視覺條，包含 60 個蛋，第 50 個是中獎的蛋
+        const totalItems = 60;
+        const winningIndex = 50; 
+
+        for (let i = 0; i < totalItems; i++) {
+            let eggToShow = (i === winningIndex) ? winningEgg : getRandomEgg();
+            strip.appendChild(createEggCard(eggToShow));
         }
-        updateUI();
-    }
 
-    function startBossFight() {
-        isBoss = true; bossPending = false;
-        document.getElementById('btn-challenge-boss').style.display = "none";
-        document.getElementById('battleZone').classList.add('boss-active');
-        document.getElementById('enemyEmoji').innerText = "👾";
-        document.getElementById('enemyNameDisplay').innerText = `⚠️ BOSS：吉良吉影的貓草 ⚠️`;
-        enemyMaxHp = Math.floor(100 * Math.exp(k_value * level) * 5);
-        enemyHp = enemyMaxHp;
-        timeLeft = stats.bossTime;
-        document.getElementById('timerDisplay').innerText = `⏳ ${timeLeft}s`;
-        bossTimer = setInterval(() => {
-            timeLeft--;
-            document.getElementById('timerDisplay').innerText = `⏳ ${timeLeft}s`;
-            if (timeLeft <= 0) {
-                clearInterval(bossTimer);
-                logMessage("<span style='color:#ff4c4c'>戰敗！BOSS 逃跑了。</span>");
-                level--; 
-                bossPending = true;
-                document.getElementById('btn-challenge-boss').style.display = "block";
-                spawnEnemy();
-            }
-        }, 1000);
-    }
+        // 強制瀏覽器重繪
+        void strip.offsetWidth;
 
-    function enemyDied() {
-        clearInterval(bossTimer);
-        let baseDrop = Math.floor(10 * Math.exp(k_value * level));
-        let reward = Math.floor((isBoss ? baseDrop * 8 : baseDrop) * stats.seedBonus);
-        seeds += reward;
-        let msg = `擊敗怪物！獲得 ${reward} 籽。`;
-        if (isBoss) {
-            blindBoxes += 2;
-            logMessage(`<span style='color:gold'>${msg} BOSS 掉落 2 個盲盒！</span>`);
-            level++;
-        } else {
-            if (Math.random() < 0.1) {
-                blindBoxes++;
-                logMessage(`${msg} <span style='color:gold'>掉落 1 個盲盒！</span>`);
+        // 計算停止位置
+        // 單個卡片寬度: 120px + margin(5+5) = 130px
+        const itemWidth = 130;
+        const containerCenter = document.querySelector('.roulette-container').offsetWidth / 2;
+        
+        // 停在第 50 個物件的中心，加入一點隨機偏移 (-40 到 40 px) 讓它看起來更自然
+        const randomOffset = (Math.random() * 80) - 40;
+        const stopPosition = (winningIndex * itemWidth) + (itemWidth / 2) - containerCenter + randomOffset;
+
+        // 設定 CSS 動畫
+        // cubic-bezier 產生一開始快，後面慢慢停下來的效果 (CSGO 風格)
+        strip.style.transition = 'transform 5s cubic-bezier(0.15, 0.85, 0.1, 1)';
+        strip.style.transform = `translateX(-${stopPosition}px)`;
+
+        // 5秒後動畫結束，顯示結果並放入冰箱
+        setTimeout(() => {
+            // 顯示結果文字
+            const resultDiv = document.getElementById('result-display');
+            resultDiv.innerHTML = `🎉 恭喜獲得：<span class="color-${winningEgg.rarity}">${winningEgg.rarity} - ${winningEgg.name}</span> 🎉`;
+            
+            // 存入冰箱
+            if (inventory[winningEgg.id]) {
+                inventory[winningEgg.id]++;
             } else {
-                logMessage(msg);
+                inventory[winningEgg.id] = 1;
             }
-        }
-        if (!isBoss && !bossPending && (level + 1) % 10 === 0) {
-            level++;
-            startBossFight();
+
+            // 恢復按鈕狀態
+            isRolling = false;
+            document.getElementById('btn-draw').disabled = false;
+        }, 5000);
+    }
+
+    // 開關冰箱介面
+    function toggleFridge() {
+        const modal = document.getElementById('fridge-modal');
+        if (modal.style.display === 'flex') {
+            modal.style.display = 'none';
         } else {
-            if (!bossPending) level++;
-            spawnEnemy();
+            updateFridgeView();
+            modal.style.display = 'flex';
         }
     }
 
-    // 基礎遊戲循環
-    function basicAttack() {
-        if (enemyHp <= 0) return;
-        let crit = Math.random() < stats.critRate;
-        let dmg = Math.floor(stats.atk * (crit ? stats.critDmg : 1));
-        enemyHp -= dmg;
-        logMessage(`${crit ? '<span style="color:#ff1493">💥爆擊！</span>' : '🐾'}造成 ${dmg} 傷害`);
-        gameContainer.classList.remove('shake');
-        void gameContainer.offsetWidth;
-        gameContainer.classList.add('shake');
-        if (enemyHp <= 0) enemyDied(); else updateUI();
-    }
+    // 更新冰箱的顯示畫面
+    function updateFridgeView() {
+        const grid = document.getElementById('fridge-grid');
+        grid.innerHTML = ''; // 清空
 
-    function standAttack() {
-        if (!skillReady || enemyHp <= 0) return;
-        skillReady = false;
-        let dmg = Math.floor(stats.atk * stats.standMult);
-        enemyHp -= dmg;
-        logMessage(`<span style="color:#ba55d3">👻 Seed Harvester 歐拉！造成 ${dmg} 傷害</span>`);
-        let cdRem = stats.cd;
-        const skillBtn = document.getElementById('btnSkillMain');
-        skillBtn.disabled = true;
-        let timer = setInterval(() => {
-            cdRem -= 0.1;
-            skillBtn.innerText = `冷卻 (${cdRem.toFixed(1)}s)`;
-            if (cdRem <= 0) {
-                clearInterval(timer); skillReady = true; skillBtn.disabled = false; skillBtn.innerText = "🌻 Seed Harvester！";
+        // 將有獲得的蛋按照稀有度排序 (SSR -> SR -> R -> N)
+        const rarityOrder = { "SSR": 4, "SR": 3, "R": 2, "N": 1 };
+        
+        const ownedEggs = Object.keys(inventory).map(id => {
+            return {
+                ...eggs.find(e => e.id === parseInt(id)),
+                count: inventory[id]
+            };
+        }).sort((a, b) => {
+            if (rarityOrder[b.rarity] !== rarityOrder[a.rarity]) {
+                return rarityOrder[b.rarity] - rarityOrder[a.rarity];
             }
-        }, 100);
-        if (enemyHp <= 0) enemyDied(); else updateUI();
-    }
+            return a.id - b.id; // 同稀有度按 ID 排
+        });
 
-    function switchTab(tabName) {
-        document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
-        document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-        document.getElementById(`tab-${tabName}`).classList.add('active');
-        document.getElementById(tabName === 'upgrade' ? 'btnTabUpgrade' : 'btnTabBox').classList.add('active');
-    }
-
-    function openBox() {
-        if (blindBoxes <= 0) { logMessage("<span style='color:#ff4c4c'>沒有盲盒了！</span>"); return; }
-        blindBoxes--;
-        let p = prizePool[Math.floor(Math.random() * prizePool.length)];
-        let res = p.f();
-        logMessage(`<span style="color:#ff69b4">🎁 ${res}</span>`);
-        updateUI();
-    }
-
-    function upgrade(type) {
-        if (seeds >= costs[type]) {
-            seeds -= costs[type];
-            if (type==='atk') { stats.atk += 10; costs.atk = Math.floor(costs.atk * 1.25); }
-            if (type==='critRate') { stats.critRate = Math.min(1, stats.critRate + 0.02); costs.critRate = Math.floor(costs.critRate * 1.5); }
-            if (type==='critDmg') { stats.critDmg += 0.2; costs.critDmg = Math.floor(costs.critDmg * 1.4); }
-            if (type==='seedBonus') { stats.seedBonus += 0.2; costs.seedBonus = Math.floor(costs.seedBonus * 1.6); }
-            if (type==='standMult') { stats.standMult += 2; costs.standMult = Math.floor(costs.standMult * 1.4); }
-            if (type==='cd') { stats.cd = Math.max(2, stats.cd - 0.2); costs.cd = Math.floor(costs.cd * 1.8); }
-            if (type==='bossTime') { stats.bossTime += 2; costs.bossTime = Math.floor(costs.bossTime * 1.3); }
-            updateUI();
+        if (ownedEggs.length === 0) {
+            grid.innerHTML = "<p style='grid-column: 1 / -1; color:#999;'>冰箱空空如也，趕快去抽獎吧！</p>";
+            return;
         }
-    }
 
-    function updateUI() {
-        document.getElementById('enemyHpBar').style.width = (enemyHp / enemyMaxHp * 100) + "%";
-        document.getElementById('hpText').innerHTML = `HP: ${Math.max(0, Math.ceil(enemyHp))} / ${enemyMaxHp}`;
-        document.getElementById('levelDisplay').innerText = `關卡：${level}`;
-        document.getElementById('seedCount').innerText = Math.floor(seeds);
-        document.getElementById('boxCount').innerText = blindBoxes;
-        document.getElementById('txt-atk').innerText = `💪 攻擊：${stats.atk}`;
-        document.getElementById('txt-critRate').innerText = `🎯 爆率：${(stats.critRate * 100).toFixed(0)}%`;
-        document.getElementById('txt-critDmg').innerText = `💥 爆傷：${(stats.critDmg * 100).toFixed(0)}%`;
-        document.getElementById('txt-seedBonus').innerText = `🌻 掉落：x${stats.seedBonus.toFixed(1)}`;
-        document.getElementById('txt-standMult').innerText = `👻 替身：x${stats.standMult}`;
-        document.getElementById('txt-cd').innerText = `⏱️ 冷卻：${stats.cd.toFixed(1)}s`;
-        document.getElementById('txt-bossTime').innerText = `⏳ Boss：${stats.bossTime}s`;
-        ['atk', 'critRate', 'critDmg', 'seedBonus', 'standMult', 'cd', 'bossTime'].forEach(t => {
-            const btn = document.getElementById(`btn-${t}`); btn.innerText = `升(${costs[t]})`; btn.disabled = seeds < costs[t];
+        // 渲染每個擁有的蛋
+        ownedEggs.forEach(egg => {
+            const item = document.createElement('div');
+            item.className = `inventory-item color-${egg.rarity}`;
+            item.innerHTML = `
+                <div class="count">x${egg.count}</div>
+                <div style="font-weight:bold; margin-bottom:5px;">${egg.rarity}</div>
+                <div>${egg.name}</div>
+            `;
+            grid.appendChild(item);
         });
     }
-
-    const k_value = 0.06;
-    spawnEnemy();
-
-    // ==========================================
-    // 全域極速事件綁定接管
-    // ==========================================
-    const allPointerdownTargets = [
-        { id: 'btnAttackMain', f: basicAttack },
-        { id: 'btnSkillMain', f: standAttack },
-        { id: 'btnTabUpgrade', f: () => switchTab('upgrade') },
-        { id: 'btnTabBox', f: () => switchTab('box') },
-        { id: 'btnOpenBox', f: openBox },
-        { id: 'btn-atk', f: () => upgrade('atk') },
-        { id: 'btn-critRate', f: () => upgrade('critRate') },
-        { id: 'btn-critDmg', f: () => upgrade('critDmg') },
-        { id: 'btn-seedBonus', f: () => upgrade('seedBonus') },
-        { id: 'btn-standMult', f: () => upgrade('standMult') },
-        { id: 'btn-cd', f: () => upgrade('cd') },
-        { id: 'btn-bossTime', f: () => upgrade('bossTime') },
-        { id: 'btn-challenge-boss', f: () => { level++; startBossFight(); updateUI(); } }
-    ];
-
-    allPointerdownTargets.forEach(target => {
-        const obj = document.getElementById(target.id);
-        if(!obj) return;
-        obj.addEventListener('pointerdown', function(e) {
-            // 全域攔截按下事件，禁止選取與放大，直接執行功能
-            e.preventDefault(); 
-            // 技能沒好不執行
-            if (target.id === 'btnSkillMain' && !skillReady) return;
-            // 升級錢不夠不執行 (upgrade已檢查，這邊可省略)
-            target.f();
-        });
-    });
-
-    // 針對全網頁防止多指縮放
-    document.addEventListener('touchstart', function(event) {
-        if (event.touches.length > 1) event.preventDefault();
-    }, { passive: false });
 </script>
 </body>
 </html>

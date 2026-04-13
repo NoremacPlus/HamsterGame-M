@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>轉蛋機</title>
+    <title>奇妙轉蛋機</title>
     <style>
         /* 基礎重置與背景 */
         body {
@@ -172,8 +172,8 @@
 </head>
 <body>
 
-    <h1>🥚 轉"蛋" 🥚</h1>
-    <p class="subtitle">N 60%, R 25%, SR 10%, SSR 5%</p>
+    <h1>🥚 奇妙轉"蛋"機 🥚</h1>
+    <p class="subtitle">N (現實) 60% | R (哺乳類) 25% | SR (建築物) 10% | SSR (宇宙) 5%</p>
 
     <div class="roulette-container">
         <div class="pointer"></div>
@@ -202,23 +202,26 @@
 <script>
     // 50 種蛋的資料庫 (N: 25, R: 10, SR: 10, SSR: 5)
     const eggs = [
-        // SSR (5種)
-        { id: 1, name: "創世神龍蛋", rarity: "SSR" }, { id: 2, name: "宇宙星塵蛋", rarity: "SSR" },
-        { id: 3, name: "絕對零度冰晶蛋", rarity: "SSR" }, { id: 4, name: "鳳凰涅槃蛋", rarity: "SSR" },
-        { id: 5, name: "混沌暗物質蛋", rarity: "SSR" },
-        // SR (10種)
-        { id: 6, name: "熔岩巨獸蛋", rarity: "SR" }, { id: 7, name: "雷霆風暴蛋", rarity: "SR" },
-        { id: 8, name: "聖光天使蛋", rarity: "SR" }, { id: 9, name: "深海巨鯨蛋", rarity: "SR" },
-        { id: 10, name: "劇毒沼澤蛋", rarity: "SR" }, { id: 11, name: "幻影精靈蛋", rarity: "SR" },
-        { id: 12, name: "霸王龍化石蛋", rarity: "SR" }, { id: 13, name: "極光魔法蛋", rarity: "SR" },
-        { id: 14, name: "虛空裂縫蛋", rarity: "SR" }, { id: 15, name: "機械賽博蛋", rarity: "SR" },
-        // R (10種)
-        { id: 16, name: "火焰鳥蛋", rarity: "R" }, { id: 17, name: "冰霜史萊姆蛋", rarity: "R" },
-        { id: 18, name: "寶石甲蟲蛋", rarity: "R" }, { id: 19, name: "黃金野豬蛋", rarity: "R" },
-        { id: 20, name: "森林樹精蛋", rarity: "R" }, { id: 21, name: "狂風巨鷹蛋", rarity: "R" },
-        { id: 22, name: "岩石石像鬼蛋", rarity: "R" }, { id: 23, name: "幽靈蝙蝠蛋", rarity: "R" },
-        { id: 24, name: "劇毒蜘蛛蛋", rarity: "R" }, { id: 25, name: "鐵甲海龜蛋", rarity: "R" },
-        // N (25種)
+        // SSR: 宇宙東西的蛋 (5種)
+        { id: 1, name: "銀河系微波蛋", rarity: "SSR" }, { id: 2, name: "超大質量黑洞蛋", rarity: "SSR" },
+        { id: 3, name: "超新星爆炸蛋", rarity: "SSR" }, { id: 4, name: "中子星脈衝蛋", rarity: "SSR" },
+        { id: 5, name: "暗物質星雲蛋", rarity: "SSR" },
+        
+        // SR: 建築物的蛋 (10種)
+        { id: 6, name: "台北101大樓蛋", rarity: "SR" }, { id: 7, name: "巴黎艾菲爾鐵塔蛋", rarity: "SR" },
+        { id: 8, name: "埃及古夫金字塔蛋", rarity: "SR" }, { id: 9, name: "比薩斜塔蛋", rarity: "SR" },
+        { id: 10, name: "雪梨歌劇院蛋", rarity: "SR" }, { id: 11, name: "羅馬競技場蛋", rarity: "SR" },
+        { id: 12, name: "泰姬瑪哈陵蛋", rarity: "SR" }, { id: 13, name: "萬里長城磚塊蛋", rarity: "SR" },
+        { id: 14, name: "杜拜哈里發塔蛋", rarity: "SR" }, { id: 15, name: "紐約自由女神蛋", rarity: "SR" },
+        
+        // R: 哺乳動物的蛋 (10種 - 結合真實與搞笑)
+        { id: 16, name: "鴨嘴獸蛋", rarity: "R" }, { id: 17, name: "澳洲針鼴蛋", rarity: "R" },
+        { id: 18, name: "呆萌水豚蛋", rarity: "R" }, { id: 19, name: "圓滾滾熊貓蛋", rarity: "R" },
+        { id: 20, name: "拆家哈士奇蛋", rarity: "R" }, { id: 21, name: "貪吃大橘貓蛋", rarity: "R" },
+        { id: 22, name: "短腿柯基蛋", rarity: "R" }, { id: 23, name: "慢吞吞樹懶蛋", rarity: "R" },
+        { id: 24, name: "聰明海豚蛋", rarity: "R" }, { id: 25, name: "吐口水羊駝蛋", rarity: "R" },
+        
+        // N: 現實世界有的蛋 (25種)
         { id: 26, name: "普通雞蛋", rarity: "N" }, { id: 27, name: "褐色土雞蛋", rarity: "N" },
         { id: 28, name: "白鴨蛋", rarity: "N" }, { id: 29, name: "斑紋鵪鶉蛋", rarity: "N" },
         { id: 30, name: "大鵝蛋", rarity: "N" }, { id: 31, name: "非洲鴕鳥蛋", rarity: "N" },

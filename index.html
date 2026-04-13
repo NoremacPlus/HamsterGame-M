@@ -6,7 +6,20 @@
     <title>替身戰鬥：標籤收納版 V4 (輪盤抽獎)</title>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Nunito:wght@700;900&family=Noto+Sans+TC:wght@500;700;900&display=swap');
-        
+        * {
+    /* 防止連點時不小心反白選取文字或圖示 */
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+    
+    /* 停用瀏覽器預設的雙擊放大功能，但保留基本的滾動能力 */
+    touch-action: manipulation;
+    
+    /* 移除點擊時出現的半透明藍色高光 (主要針對手機版) */
+    -webkit-tap-highlight-color: transparent;
+}
+
         body {
             font-family: 'Nunito', 'Noto Sans TC', sans-serif;
             background-color: #fff0f5; background-image: radial-gradient(#ffd1dc 2px, transparent 2px);

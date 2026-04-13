@@ -2,53 +2,75 @@
 <html lang="zh-TW">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>替身戰鬥：標籤收納版 V4 (輪盤抽獎)</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>替身戰鬥：標籤收納版 V5</title>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Nunito:wght@700;900&family=Noto+Sans+TC:wght@500;700;900&display=swap');
+        
+        /* ==========================================
+           全域防護設定：徹底禁止雙擊放大與文字反白
+           ========================================== */
         * {
-    /* 防止連點時不小心反白選取文字或圖示 */
-    -webkit-user-select: none;
-    -moz-user-select: none;
-    -ms-user-select: none;
-    user-select: none;
-    
-    /* 停用瀏覽器預設的雙擊放大功能，但保留基本的滾動能力 */
-    touch-action: manipulation;
-    
-    /* 移除點擊時出現的半透明藍色高光 (主要針對手機版) */
-    -webkit-tap-highlight-color: transparent;
-}
+            -webkit-user-select: none; /* 禁用 Safari 文字選取 */
+            -moz-user-select: none;    /* 禁用 Firefox 文字選取 */
+            -ms-user-select: none;     /* 禁用 IE/Edge 文字選取 */
+            user-select: none;         /* 禁用標準文字選取 */
+            -webkit-touch-callout: none; /* 禁用長按跳出選單 */
+            -webkit-tap-highlight-color: transparent; /* 移除點擊時的藍色半透明底色 */
+            touch-action: manipulation; /* 停用雙擊放大，僅允許基本滑動與點擊 */
+        }
+
+        /* 確保可以上下滑動的地方正常運作 */
+        .tab-content {
+            touch-action: pan-y;
+        }
 
         body {
             font-family: 'Nunito', 'Noto Sans TC', sans-serif;
-            background-color: #fff0f5; background-image: radial-gradient(#ffd1dc 2px, transparent 2px);
-            background-size: 30px 30px; color: #5d4037; 
+            background-color: #fff0f5; 
+            background-image: radial-gradient(#ffd1dc 2px, transparent 2px);
+            background-size: 30px 30px; 
+            color: #5d4037; 
             display: flex; justify-content: center; align-items: center;
             height: 100dvh; margin: 0; padding: 10px; box-sizing: border-box; overflow: hidden; 
+            /* 防止整個頁面被拉動 */
+            overscroll-behavior-y: contain;
         }
         
         .container {
-            background: #ffffff; border-radius: 25px; box-shadow: 0 8px 20px rgba(255, 182, 193, 0.6); 
-            width: 100%; max-width: 450px; height: 100%; max-height: 850px; 
-            display: flex; flex-direction: column; border: 4px solid #ffb6c1; box-sizing: border-box; position: relative; overflow: hidden;
+            background: #ffffff; padding: 10px 15px 0 15px; border-radius: 25px;
+            box-shadow: 0 8px 20px rgba(255, 182, 193, 0.6); width: 100%; max-width: 450px;
+            height: 100%; max-height: 850px; display: flex; flex-direction: column;
+            border: 4px solid #ffb6c1; box-sizing: border-box; position: relative; overflow: hidden;
         }
 
-        .marquee-top { background: #ffb6c1; color: #fff; padding: 5px 0; font-weight: 900; font-size: 0.9em; width: 100%; text-align: center; }
+        /* 頂部戰鬥日誌 (往下跳) */
+        .log-top {
+            height: 55px; background: #fff8dc; padding: 8px 12px; border-radius: 12px;
+            font-size: 0.8em; color: #5d4037; overflow-y: hidden; text-align: left;
+            border: 2px dashed #ffb6c1; font-weight: bold; line-height: 1.5; margin-bottom: 5px;
+        }
         
-        .header-info { display: flex; justify-content: space-between; align-items: center; margin: 10px 15px 5px 15px; background: #fff8dc; padding: 5px 15px; border-radius: 15px; }
+        .header-info {
+            display: flex; justify-content: space-between; align-items: center;
+            margin-bottom: 5px; background: #ffe4e1; padding: 5px 15px; border-radius: 15px;
+        }
         .level-info { font-size: 0.85em; font-weight: 900; color: #20b2aa; }
         .timer { color: #ff6b81; font-size: 0.9em; font-weight: 900; }
         
         .battle-zone {
             background-color: #fdf5e6; padding: 10px 15px; border-radius: 20px;
-            margin: 0 15px 10px 15px; text-align: center; border: 2px dashed #ffb6c1;
-            display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 160px; position: relative;
+            margin-bottom: 10px; text-align: center; border: 2px dashed #ffb6c1;
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            min-height: 160px; position: relative;
         }
         
+        /* 挑戰 BOSS 按鈕 */
         #btn-challenge-boss {
-            display: none; position: absolute; top: 8px; right: 8px; background: #ff4c4c; color: white; border: none; padding: 5px 10px;
-            border-radius: 10px; font-weight: 900; font-size: 0.8em; cursor: pointer; box-shadow: 0 3px 0 #c0392b; z-index: 10;
+            display: none; position: absolute; top: 8px; right: 8px;
+            background: #ff4c4c; color: white; border: none; padding: 5px 10px;
+            border-radius: 10px; font-weight: 900; font-size: 0.8em; cursor: pointer;
+            box-shadow: 0 3px 0 #c0392b; z-index: 10;
         }
         #btn-challenge-boss:active { transform: translateY(2px); box-shadow: none; }
         
@@ -56,65 +78,66 @@
         .enemy-emoji-display { font-size: 2.5em; margin-bottom: 5px; transition: all 0.3s; }
         .boss-active .enemy-emoji-display { font-size: 3.5em; transform: scale(1.1); }
         
-        .hp-bar-container { width: 100%; background-color: #ffe4e1; height: 14px; border-radius: 7px; overflow: hidden; border: 2px solid #ffc0cb; }
+        .hp-bar-container {
+            width: 100%; background-color: #ffe4e1; height: 14px;
+            border-radius: 7px; overflow: hidden; border: 2px solid #ffc0cb;
+        }
         .hp-bar { height: 100%; background-color: #ff6b81; width: 100%; transition: width 0.2s; }
         #hpText { font-weight: bold; color: #d2691e; margin-top: 3px; font-size: 0.8em; }
         
-        .tab-container { display: flex; flex-direction: column; flex-grow: 1; overflow: hidden; margin: 0 15px 10px 15px; }
+        .tab-container { display: flex; flex-direction: column; flex-grow: 1; overflow: hidden; margin-bottom: 10px; }
         .tabs { display: flex; gap: 5px; }
-        .tab-btn { flex: 1; padding: 8px; background: #ffe4e1; border: 2px solid #add8e6; border-bottom: none; border-radius: 12px 12px 0 0; cursor: pointer; font-weight: 900; color: #a0522d; font-size: 0.9em; }
+        .tab-btn {
+            flex: 1; padding: 8px; background: #ffe4e1; border: 2px solid #add8e6; border-bottom: none;
+            border-radius: 12px 12px 0 0; cursor: pointer; font-weight: 900; color: #a0522d; font-size: 0.9em;
+        }
         .tab-btn.active { background: #f0f8ff; border-bottom: 2px solid #f0f8ff; color: #20b2aa; }
-        .tab-content { display: none; background: #f0f8ff; border: 2px solid #add8e6; border-radius: 0 0 12px 12px; padding: 10px; flex-grow: 1; overflow-y: auto; }
+        .tab-content {
+            display: none; background: #f0f8ff; border: 2px solid #add8e6; border-radius: 0 0 12px 12px;
+            padding: 10px; flex-grow: 1; overflow-y: auto;
+        }
         .tab-content.active { display: block; }
 
         .upgrade-item { display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; font-size: 0.8em; background: #fff; padding: 5px 8px; border-radius: 8px; }
         .upgrade-btn { background-color: #87ceeb; padding: 4px 8px; color: #fff; border:none; border-radius:6px; font-weight: bold; }
         .upgrade-btn:disabled { background-color: #d3d3d3; }
 
-        /* 盲盒與輪盤動畫 UI */
-        .box-ui { text-align: center; padding: 0; }
-        .btn-open-box { background: linear-gradient(45deg, #ff9a9e 0%, #fecfef 100%); padding: 10px 20px; border-radius: 20px; border: none; font-weight: 900; cursor: pointer; transition: all 0.2s; }
-        
-        #roulette-wrapper {
-            position: relative; width: 100%; height: 60px; background: #333; border: 3px solid #666;
-            border-radius: 8px; overflow: hidden; margin: 10px 0; display: none; box-shadow: inset 0 2px 8px rgba(0,0,0,0.5);
+        .box-ui { text-align: center; padding: 5px 0; }
+        .btn-open-box {
+            background: linear-gradient(45deg, #ff9a9e 0%, #fecfef 100%);
+            padding: 10px 20px; border-radius: 20px; border: none; font-weight: 900; cursor: pointer; color: #5d4037;
         }
-        .roulette-pointer {
-            position: absolute; top: 0; left: 50%; transform: translateX(-50%);
-            width: 4px; height: 100%; background: #ffeb3b; z-index: 10; box-shadow: 0 0 8px #ffeb3b;
-        }
-        #roulette-track { display: flex; height: 100%; width: max-content; }
-        .r-item {
-            width: 100px; height: 100%; display: flex; align-items: center; justify-content: center;
-            border-right: 2px solid #222; font-size: 0.75em; font-weight: 900; color: #fff;
-            box-sizing: border-box; flex-shrink: 0; text-align: center; line-height: 1.2;
-        }
-        /* 獎項顏色分級 */
-        .bg-ssr { background: linear-gradient(135deg, #ffd700, #ff8c00); text-shadow: 1px 1px 2px #000; }
-        .bg-sr  { background: linear-gradient(135deg, #da70d6, #9370db); text-shadow: 1px 1px 2px #000; }
-        .bg-r   { background: linear-gradient(135deg, #4682b4, #00bfff); text-shadow: 1px 1px 2px #000; }
-        .bg-n   { background: linear-gradient(135deg, #a9a9a9, #808080); }
 
-        #prize-result-text { font-size: 1.1em; font-weight: 900; margin-top: 5px; color: #ff1493; display: none; }
-
-        .action-zone { margin: 0 15px 5px 15px; }
-        .small-resource { text-align: right; font-size: 0.9em; font-weight: 900; color: #d2691e; margin-bottom: 4px; }
+        .action-zone { margin-bottom: 5px; }
+        .small-resource { text-align: right; font-size: 0.9em; font-weight: 900; color: #d2691e; margin-bottom: 4px; padding-right: 5px; }
         .actions { display: flex; gap: 6px; flex-direction: column; }
         .btn-attack { padding: 10px; font-size: 1em; font-weight: 900; border: none; border-radius: 12px; background: #ffd700; color: #a0522d; box-shadow: 0 4px 0 #daa520; }
         .btn-skill { padding: 10px; font-size: 1em; font-weight: 900; border: none; border-radius: 12px; background: #dda0dd; color: #fff; box-shadow: 0 4px 0 #ba55d3; }
         .btn-skill:disabled { background: #e6e6e6 !important; box-shadow: none; color: #aaa; }
         
-        .log-latest { height: 35px; background: #333; padding: 5px 15px; font-size: 0.85em; color: #00ffcc; text-align: center; border-top: 2px solid #ffb6c1; font-weight: bold; line-height: 35px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        /* 底部最新單筆訊息 */
+        .log-latest {
+            height: 35px; background: #333; padding: 0 15px;
+            font-size: 0.85em; color: #00ffcc; text-align: center; 
+            border-radius: 12px 12px 0 0; font-weight: bold; line-height: 35px;
+            white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+            margin: 0 -15px 0 -15px;
+        }
+
         .shake { animation: shake 0.3s cubic-bezier(.36,.07,.19,.97) both; }
         @keyframes shake { 10%, 90% { transform: translate3d(-1px, 0, 0); } 20%, 80% { transform: translate3d(2px, 0, 0); } 30%, 50%, 70% { transform: translate3d(-3px, 0, 0); } }
     </style>
 </head>
 <body>
 
+<script>
+    document.addEventListener('gesturestart', function (e) {
+        e.preventDefault();
+    });
+</script>
+
 <div class="container" id="gameContainer">
-    <div class="marquee-top">
-        <marquee id="marquee-log" scrollamount="4">🐹 準備開始戰鬥！努力收集葵花籽吧！</marquee>
-    </div>
+    <div class="log-top" id="battleLogTop">🐹 準備開始戰鬥！努力收集葵花籽吧！</div>
     
     <div class="header-info">
         <div class="level-info" id="levelDisplay">關卡：1</div>
@@ -147,16 +170,9 @@
 
         <div id="tab-box" class="tab-content">
             <div class="box-ui">
-                <div style="font-weight:900; margin-bottom:5px;">擁有盲盒：<span id="boxCount">0</span> 個</div>
-                
-                <div id="roulette-wrapper">
-                    <div class="roulette-pointer"></div>
-                    <div id="roulette-track"></div>
-                </div>
-                
-                <button class="btn-open-box" id="btn-open-box" onclick="handleBoxClick()">🎲 開啟幸運盒</button>
-                <div id="prize-result-text">獲得獎項</div>
-                <div style="font-size:0.7em; color:#888; margin-top:10px;">SSR(金) / SR(紫) / R(藍) / N(灰)</div>
+                <div style="font-weight:900; margin-bottom:10px;">擁有盲盒：<span id="boxCount">0</span> 個</div>
+                <button class="btn-open-box" onclick="openBox()">🎲 開啟幸運盒</button>
+                <div style="font-size:0.75em; color:#888; margin-top:15px; line-height:1.4;">15種驚喜獎項：SSR攻擊翻倍、<br>海量種子、盲盒連抽...</div>
             </div>
         </div>
     </div>
@@ -175,49 +191,43 @@
 <script>
     let level = 1; let seeds = 0; let blindBoxes = 0;
     let stats = { atk: 10, critRate: 0.05, critDmg: 1.5, seedBonus: 1.0, standMult: 15, cd: 10.0, bossTime: 30 };
+    // 調整升級成本倍率
     let costs = { atk: 20, critRate: 50, critDmg: 100, seedBonus: 150, standMult: 300, cd: 500, bossTime: 800 };
     let enemyMaxHp = 100; let enemyHp = 100; 
     let isBoss = false; let bossPending = false; 
     let bossTimer; let timeLeft = 30; let skillReady = true;
-    let logHistoryStr = "🐹 準備開始戰鬥！";
-
-    // 抽獎動畫變數
-    let isSpinning = false;
-    let spinTimeout;
-    let pendingPrize = null;
-    let finalScrollTarget = 0;
 
     const enemyData = [
         {e:"🐷", n:"貪吃小豬"}, {e:"🐸", n:"呱呱青蛙"}, {e:"🐶", n:"單身汪汪"}, {e:"🐱", n:"傲嬌貓咪"}, {e:"🐭", n:"下水道鼠"},
         {e:"🐹", n:"野生同伴"}, {e:"🐰", n:"暴力兔兔"}, {e:"🦊", n:"狡猾狐狸"}, {e:"🐻", n:"暴走熊熊"}, {e:"🐼", n:"功夫熊貓"}
     ];
 
-    // 新增 rarity (r) 屬性來決定底色
     const prizePool = [
-        { n: "SSR<br>攻擊翻倍", r: "bg-ssr", f: () => { stats.atk *= 2; return "SSR！攻擊力永久翻倍！"; } },
-        { n: "SR<br>幸運福袋", r: "bg-sr", f: () => { seeds += 2000; return "撿到大福袋！(2000籽)"; } },
-        { n: "SR<br>盲盒三連", r: "bg-sr", f: () => { blindBoxes += 3; return "連連看！額外獲得 3 盲盒！"; } },
-        { n: "SR<br>海量種子", r: "bg-sr", f: () => { let s = level * 1000; seeds += s; return `獲得海量種子 ${s} 籽！`; } },
-        { n: "R<br>替身強化", r: "bg-r", f: () => { stats.standMult += 10; return "替身倍率提升 10！"; } },
-        { n: "R<br>爆擊之魂", r: "bg-r", f: () => { stats.critRate += 0.05; return "爆擊率提升 5%！"; } },
-        { n: "R<br>爆傷之刃", r: "bg-r", f: () => { stats.critDmg += 0.5; return "爆擊傷害提升 50%！"; } },
-        { n: "R<br>時間包囊", r: "bg-r", f: () => { stats.bossTime += 5; return "BOSS 時間延長 5 秒！"; } },
-        { n: "R<br>掉落增幅", r: "bg-r", f: () => { stats.seedBonus += 0.2; return "種子倍率提升 x0.2！"; } },
-        { n: "R<br>盲盒連抽", r: "bg-r", f: () => { blindBoxes += 1; return "再來一盒！"; } },
-        { n: "N<br>快速冷卻", r: "bg-n", f: () => { stats.cd = Math.max(2, stats.cd - 0.2); return "冷卻縮短 0.2 秒！"; } },
-        { n: "N<br>迷你種袋", r: "bg-n", f: () => { seeds += 500; return "獲得 500 籽。"; } },
-        { n: "N<br>戰鬥補給", r: "bg-n", f: () => { seeds += level * 200; return "獲得戰鬥補給。"; } },
-        { n: "N<br>替身殘影", r: "bg-n", f: () => { stats.standMult += 2; return "替身強度微幅提升。"; } },
-        { n: "N<br>爆擊碎片", r: "bg-n", f: () => { stats.critRate += 0.01; return "爆擊率微幅提升。"; } }
+        { n: "SSR 攻擊翻倍", f: () => { stats.atk *= 2; return "SSR級獎項！攻擊力永久翻倍！"; } },
+        { n: "海量種子", f: () => { let s = level * 1000; seeds += s; return `獲得海量種子 ${s} 籽！`; } },
+        { n: "替身強化", f: () => { stats.standMult += 10; return "替身倍率永久提升 10！"; } },
+        { n: "爆擊之魂", f: () => { stats.critRate += 0.05; return "爆擊率永久提升 5%！"; } },
+        { n: "爆傷之刃", f: () => { stats.critDmg += 0.5; return "爆擊傷害永久提升 50%！"; } },
+        { n: "幸運種子盒", f: () => { blindBoxes += 3; return "幸運連連！額外獲得 3 個盲盒！"; } },
+        { n: "時間包囊", f: () => { stats.bossTime += 5; return "BOSS 時間永久延長 5 秒！"; } },
+        { n: "掉落增幅", f: () => { stats.seedBonus += 0.2; return "種子掉落倍率提升 x0.2！"; } },
+        { n: "快速冷卻", f: () => { stats.cd = Math.max(2, stats.cd - 0.2); return "技能冷卻縮短 0.2 秒！"; } },
+        { n: "迷你種子袋", f: () => { seeds += 500; return "獲得 500 籽。"; } },
+        { n: "戰鬥補給", f: () => { seeds += level * 200; return "獲得一袋戰鬥補給。"; } },
+        { n: "替身殘影", f: () => { stats.standMult += 2; return "替身強度微幅提升。"; } },
+        { n: "爆擊碎片", f: () => { stats.critRate += 0.01; return "爆擊率微幅提升。"; } },
+        { n: "種子福袋", f: () => { seeds += 2000; return "幸運地撿到大福袋！"; } },
+        { n: "盲盒連抽", f: () => { blindBoxes += 1; return "再送一盒！"; } }
     ];
 
+    const logTop = document.getElementById('battleLogTop');
     const latestMessageObj = document.getElementById('latestMessage');
-    const marqueeObj = document.getElementById('marquee-log');
 
-    function logMessage(msgHtml, pureText) {
+    function logMessage(msgHtml) {
+        // 新訊息加在最前面（往下推）
+        logTop.innerHTML = msgHtml + "<br>" + logTop.innerHTML;
+        // 底部單筆最新訊息
         latestMessageObj.innerHTML = msgHtml;
-        logHistoryStr += " ｜ " + pureText;
-        marqueeObj.innerText = logHistoryStr;
     }
 
     function switchTab(tabName) {
@@ -227,104 +237,20 @@
         document.getElementById(tabName === 'upgrade' ? 'btnTabUpgrade' : 'btnTabBox').classList.add('active');
     }
 
-    // --- 輪盤抽獎核心邏輯 ---
-    function handleBoxClick() {
-        if (isSpinning) {
-            // 若正在旋轉，點擊則跳過動畫
-            skipAnimation();
-        } else {
-            // 開啟新盲盒
-            startRoulette();
-        }
-    }
-
-    function startRoulette() {
-        if (blindBoxes <= 0) { logMessage("<span style='color:#ff4c4c'>沒有盲盒了！</span>", "沒有盲盒了！"); return; }
-        
+    function openBox() {
+        if (blindBoxes <= 0) { logMessage("<span style='color:#ff4c4c'>沒有盲盒了！</span>"); return; }
         blindBoxes--;
-        updateUI();
-        
-        const wrapper = document.getElementById('roulette-wrapper');
-        const track = document.getElementById('roulette-track');
-        const btnOpen = document.getElementById('btn-open-box');
-        document.getElementById('prize-result-text').style.display = 'none';
-
-        wrapper.style.display = 'block';
-        track.style.transition = 'none';
-        track.style.transform = 'translateX(0px)';
-        track.innerHTML = '';
-
-        // 決定這次的真實獎項
-        pendingPrize = prizePool[Math.floor(Math.random() * prizePool.length)];
-        
-        // 生成 35 個假軌道物件，把真實獎項放在第 30 個位置 (Index 29)
-        const totalItems = 35;
-        const winningIndex = 29;
-        const itemWidth = 100; // 必須與 CSS 中的 r-item width 一致
-        
-        let trackHTML = "";
-        for (let i = 0; i < totalItems; i++) {
-            let item = (i === winningIndex) ? pendingPrize : prizePool[Math.floor(Math.random() * prizePool.length)];
-            trackHTML += `<div class="r-item ${item.r}">${item.n}</div>`;
-        }
-        track.innerHTML = trackHTML;
-
-        // 計算捲動距離
-        btnOpen.innerText = "⏩ 跳過動畫";
-        isSpinning = true;
-
-        setTimeout(() => {
-            const wrapperWidth = wrapper.offsetWidth;
-            const targetCenter = winningIndex * itemWidth + (itemWidth / 2);
-            // 隨機偏移，讓指針不會每次都指在正中間
-            const randomOffset = (Math.random() - 0.5) * (itemWidth * 0.8);
-            
-            // 計算最終要 translateX 多遠 (往左推，所以是負值)
-            finalScrollTarget = -(targetCenter - (wrapperWidth / 2) + randomOffset);
-            
-            // 設定 3.5 秒的 ease-out 減速動畫
-            track.style.transition = 'transform 3.5s cubic-bezier(0.15, 0.85, 0.15, 1)';
-            track.style.transform = `translateX(${finalScrollTarget}px)`;
-            
-            // 動畫結束後自動給獎
-            spinTimeout = setTimeout(() => {
-                givePrize();
-            }, 3500);
-        }, 50); // 稍微延遲以確保 CSS transition 生效
-    }
-
-    function skipAnimation() {
-        clearTimeout(spinTimeout);
-        const track = document.getElementById('roulette-track');
-        // 瞬間將轉盤切換到最終位置
-        track.style.transition = 'none';
-        track.style.transform = `translateX(${finalScrollTarget}px)`;
-        givePrize();
-    }
-
-    function givePrize() {
-        if (!pendingPrize) return;
-        isSpinning = false;
-        
-        const btnOpen = document.getElementById('btn-open-box');
-        btnOpen.innerText = "🎲 開啟幸運盒";
-        
-        let resText = pendingPrize.f();
-        logMessage(`🎁 ${resText}`, `🎁 ${resText}`);
-        
-        const resDiv = document.getElementById('prize-result-text');
-        resDiv.innerHTML = `獲得：${pendingPrize.n.replace('<br>', ' ')}`;
-        resDiv.style.display = 'block';
-        
-        pendingPrize = null;
+        let p = prizePool[Math.floor(Math.random() * prizePool.length)];
+        let res = p.f();
+        logMessage(`<span style="color:#ff69b4">🎁 ${res}</span>`);
         updateUI();
     }
-    // --- 輪盤邏輯結束 ---
 
     const k_value = 0.06;
 
     function spawnEnemy() {
         clearInterval(bossTimer); document.getElementById('timerDisplay').innerText = "";
+        
         if (level > 0 && level % 10 === 0 && !bossPending) {
             startBossFight();
         } else {
@@ -333,8 +259,10 @@
             let data = enemyData[Math.floor(Math.random() * enemyData.length)];
             document.getElementById('enemyEmoji').innerText = data.e;
             document.getElementById('enemyNameDisplay').innerText = data.n + ` (Lv.${level})`;
+            
             enemyMaxHp = Math.floor(100 * Math.exp(k_value * level));
             enemyHp = enemyMaxHp;
+            
             document.getElementById('hpText').innerHTML = `HP: ${enemyHp} / ${enemyMaxHp}`;
         }
         updateUI();
@@ -346,6 +274,7 @@
         document.getElementById('battleZone').classList.add('boss-active');
         document.getElementById('enemyEmoji').innerText = "👾";
         document.getElementById('enemyNameDisplay').innerText = `⚠️ BOSS：吉良吉影的貓草 ⚠️`;
+        
         enemyMaxHp = Math.floor(100 * Math.exp(k_value * level) * 5);
         enemyHp = enemyMaxHp;
         
@@ -356,8 +285,8 @@
             document.getElementById('timerDisplay').innerText = `⏳ ${timeLeft}s`;
             if (timeLeft <= 0) {
                 clearInterval(bossTimer);
-                logMessage("<span style='color:#ff4c4c'>戰敗！BOSS 逃跑了。</span>", "戰敗！BOSS 逃跑了。");
-                level--; 
+                logMessage("<span style='color:#ff4c4c'>戰敗！BOSS 逃跑了。</span>");
+                level--; // 退回前一關
                 bossPending = true;
                 document.getElementById('btn-challenge-boss').style.display = "block";
                 spawnEnemy();
@@ -365,7 +294,11 @@
         }, 1000);
     }
 
-    function manualChallengeBoss() { level++; startBossFight(); updateUI(); }
+    function manualChallengeBoss() {
+        level++; 
+        startBossFight();
+        updateUI();
+    }
 
     function enemyDied() {
         clearInterval(bossTimer);
@@ -374,16 +307,27 @@
         seeds += reward;
         
         let msg = `擊敗怪物！獲得 ${reward} 籽。`;
+        
         if (isBoss) {
-            blindBoxes += 2; logMessage(`<span style='color:gold'>${msg} 掉落 2 個盲盒！</span>`, `${msg} 掉落 2 盲盒！`);
+            blindBoxes += 2;
+            logMessage(`<span style='color:gold'>${msg} BOSS 掉落 2 個盲盒！</span>`);
             level++;
         } else {
-            if (Math.random() < 0.1) { blindBoxes++; logMessage(`${msg} <span style='color:gold'>掉落盲盒！</span>`, `${msg} 掉落盲盒！`); } 
-            else { logMessage(msg, msg); }
+            if (Math.random() < 0.1) {
+                blindBoxes++;
+                logMessage(`${msg} <span style='color:gold'>掉落 1 個盲盒！</span>`);
+            } else {
+                logMessage(msg);
+            }
         }
         
-        if (!isBoss && !bossPending && (level + 1) % 10 === 0) { level++; startBossFight(); } 
-        else { if (!bossPending) level++; spawnEnemy(); }
+        if (!isBoss && !bossPending && (level + 1) % 10 === 0) {
+            level++;
+            startBossFight();
+        } else {
+            if (!bossPending) level++;
+            spawnEnemy();
+        }
     }
 
     function basicAttack() {
@@ -391,11 +335,15 @@
         let crit = Math.random() < stats.critRate;
         let dmg = Math.floor(stats.atk * (crit ? stats.critDmg : 1));
         enemyHp -= dmg;
-        logMessage(`${crit ? '<span style="color:#ff1493">💥爆擊！</span>' : '🐾'}造成 ${dmg} 傷害`, `${crit ? '💥爆擊！' : '🐾'}造成 ${dmg} 傷害`);
+        
+        logMessage(`${crit ? '<span style="color:#ff1493">💥爆擊！</span>' : '🐾'}造成 ${dmg} 傷害`);
+        
         document.getElementById('gameContainer').classList.remove('shake');
         void document.getElementById('gameContainer').offsetWidth;
         document.getElementById('gameContainer').classList.add('shake');
-        if (enemyHp <= 0) enemyDied(); else updateUI();
+        
+        if (enemyHp <= 0) enemyDied();
+        else updateUI();
     }
 
     function standAttack() {
@@ -403,19 +351,23 @@
         skillReady = false;
         let dmg = Math.floor(stats.atk * stats.standMult);
         enemyHp -= dmg;
-        logMessage(`<span style="color:#ba55d3">👻 Seed Harvester 造成 ${dmg} 傷害</span>`, `👻 Seed Harvester 造成 ${dmg} 傷害`);
+        logMessage(`<span style="color:#ba55d3">👻 Seed Harvester 造成 ${dmg} 傷害</span>`);
         
         let cdRem = stats.cd;
         document.getElementById('btnSkill').disabled = true;
         let timer = setInterval(() => {
-            cdRem -= 0.1; document.getElementById('btnSkill').innerText = `冷卻 (${cdRem.toFixed(1)}s)`;
+            cdRem -= 0.1;
+            document.getElementById('btnSkill').innerText = `冷卻 (${cdRem.toFixed(1)}s)`;
             if (cdRem <= 0) {
-                clearInterval(timer); skillReady = true;
+                clearInterval(timer);
+                skillReady = true;
                 document.getElementById('btnSkill').disabled = false;
                 document.getElementById('btnSkill').innerText = "🌻 Seed Harvester！";
             }
         }, 100);
-        if (enemyHp <= 0) enemyDied(); else updateUI();
+        
+        if (enemyHp <= 0) enemyDied();
+        else updateUI();
     }
 
     function upgrade(type) {
@@ -448,7 +400,9 @@
         document.getElementById('txt-bossTime').innerText = `⏳ Boss：${stats.bossTime}s`;
 
         ['atk', 'critRate', 'critDmg', 'seedBonus', 'standMult', 'cd', 'bossTime'].forEach(t => {
-            const btn = document.getElementById(`btn-${t}`); btn.innerText = `升(${costs[t]})`; btn.disabled = seeds < costs[t];
+            const btn = document.getElementById(`btn-${t}`);
+            btn.innerText = `升(${costs[t]})`;
+            btn.disabled = seeds < costs[t];
         });
     }
 
